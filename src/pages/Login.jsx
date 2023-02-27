@@ -1,15 +1,13 @@
 import React from 'react'
-import Layout from '../components/Layout'
-
-
-
+import LoginLayout from '../components/login/LoginLayout'
 
 
 
 function Login() {
   return (
-    <Layout/>
-      
+
+    <LoginLayout />
+
   )
 }
 
