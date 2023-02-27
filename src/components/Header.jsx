@@ -1,11 +1,12 @@
 import React from 'react'
 import styled from "styled-components";
-
+import {Link} from 'react-router-dom'
 
 function Header() {
   return(
     <StHeader>
       What To DO?
+      <Link to='/mytodo'>dd</Link>
     </StHeader>
   )
 }

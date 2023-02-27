@@ -1,10 +1,14 @@
 import React from 'react'
 import styled from 'styled-components';
-
+import Header from './Header'
+import LoginFormWrapper from '././login/LoginFormWrapper'
 
 function Layout() {
   return (
-    <StLayout />
+    <StLayout>
+      <Header/>
+      <LoginFormWrapper/>
+    </StLayout>
   )
 }
 
