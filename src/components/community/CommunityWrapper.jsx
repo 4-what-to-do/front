@@ -9,7 +9,7 @@ import {SlHeart} from 'react-icons/sl';
 function CommunityWrapper(){
     return(
         <>
-        <Logo/>
+        <Logo src='/img/logo.jpeg'/>
         <CategoryContainer>
         <CategoryButton>공부 <FaPencilAlt/></CategoryButton>
         <CategoryButton>업무 <RiComputerFill/></CategoryButton>
@@ -22,9 +22,8 @@ function CommunityWrapper(){
     )
 }
 const Logo = styled.img`
-  max-width: 100%;
-  height: auto;
-  margin: 2rem 0;
+width: 700px;
+height: 850px;
 `;
 
 const CategoryContainer = styled.div`

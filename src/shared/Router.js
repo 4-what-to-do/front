@@ -13,8 +13,6 @@ const Router = () => {
         <Route path="/membership" element={<Membership />} />
         <Route path="/mytodo" element={<MyTodo />} />
         <Route path="/community" element={<Community />} />
-        
-
       </Routes>
     </BrowserRouter>
   );

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState,useEffect } from 'react'
 import styled from 'styled-components'
 import { useMutation } from 'react-query';
 import axios from 'axios';
@@ -10,11 +10,16 @@ function MembershipInputWrappert() {
   const [email, setEmail] = useState("")
   const [nickname, setNickname] = useState("")
   const [password, setPassword] = useState("")
-  const [passwordConfirm, setPasswordConfirm] = useState("");
-
+  const [passwordCheck, setPasswordCheck] = useState("");
+  const [submitDisabled, setSubmitDisabled] = useState(false);
+  const [showErrorMessage, setShowErrorMessage] = useState(false);
   const [ischeck, setIscheck] = useState(false);
-  const [isid, setIsid] = useState(false);
+  const [isemail, setIsemail] = useState(false);
   const navigate = useNavigate();
+
+  // useEffect(() => {
+  //   setSubmitDisabled(password === passwordCheck)
+  // }, [password, passwordCheck])
 
 //회원가입
   const signUpMutation = useMutation(postSignup, {
@@ -25,7 +30,7 @@ function MembershipInputWrappert() {
     },
     onError: (response) => {
       console.log(response);
-      alert("뭔가 에러?");
+      alert("회원가입 뭔가 에러?");
     },
   });
 
@@ -33,7 +38,7 @@ function MembershipInputWrappert() {
   const checkIdMutation = useMutation(getCheckId, {
     onSuccess: (response) => {
       console.log(response);
-      setIsid(response);
+      setIsemail(response);
     },
   });
 
@@ -43,16 +48,18 @@ function MembershipInputWrappert() {
     const checkID = (e) => {
       setIscheck(true);
       checkIdMutation.mutate(e.target.value);
-      // {ischeck ? !isid ? alert("이미 사용중 입니다"): alert("사용 가능합니다") : null}
+      {ischeck && isemail !== undefined && (
+        isemail ? alert("이미 사용중 입니다") : alert("사용 가능합니다")
+      )}
     };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!email || !nickname || !password || !passwordConfirm) {
+    if (!email || !nickname || !password || !passwordCheck) {
       alert('모든 항목을 입력해주세요.');
       return;
     }
-    if (password !== passwordConfirm) {
+    if (password !== passwordCheck) {
       alert('비밀번호가 일치 하지 않습니다');
       return;
     }
@@ -65,8 +72,18 @@ function MembershipInputWrappert() {
       email,
       nickname,
       password,
+      passwordCheck,
     };
     signUpMutation.mutate(userData);
+  };
+
+  const handleFocus = () => {
+      setShowErrorMessage(true);
+  };
+
+  const handleChange = (e) => {
+    setEmail(e.target.value);
+    setShowErrorMessage(true);
   };
 
   
@@ -78,31 +95,39 @@ function MembershipInputWrappert() {
           type="email"
           placeholder="이메일을 입력해주세요"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={handleChange}
+          onFocus={handleFocus}
         />
         <StDuplicateCheckButton value={email}  onClick={checkID}>중복확인</StDuplicateCheckButton>
       </StInputContainer>
+      {showErrorMessage && !email.includes("@") ? <Stwarning>@를 입력해주세요</Stwarning> : null}
       <StInputContainer>
         <StInput
           type="text"
           placeholder="닉네임을 입력 해주세요"
           value={nickname}
-          onChange={(e) => setNickname(e.target.value)}
+          onChange={(e) => setNickname(e.target.value) && setShowErrorMessage(true)}
+          onFocus={handleFocus}
         />
         <StDuplicateCheckButton>중복확인</StDuplicateCheckButton>
       </StInputContainer>
+      {showErrorMessage && nickname.length < 2 ? <Stwarning>닉네임은 영문 대,소문자와 숫자로 구성된 2자 ~ 10자리여야 합니다.</Stwarning> : null}
       <StInput
         type="password"
         placeholder="비밀번호를 입력 해주세요"
         value={password}
-        onChange={(e) => setPassword(e.target.value)}
+        onChange={(e) => setPassword(e.target.value)  && setShowErrorMessage(true)}
+        onFocus={handleFocus}
       />
+      {showErrorMessage && password.length < 4 || password.length > 12 ? <Stwarning>알파벳 대, 소문자, 숫자로 구성된 4~12자리여야 합니다.</Stwarning> : null}
       <StInput
         type="password"
         placeholder="비밀번호를 다시 입력 해주세요"
-        value={passwordConfirm}
-        onChange={(e) => setPasswordConfirm(e.target.value)}
+        value={passwordCheck}
+        onChange={(e) => setPasswordCheck(e.target.value)  && setShowErrorMessage(true)}
+        onFocus={handleFocus}
       />
+      {showErrorMessage && password != passwordCheck ? <Stwarning>비밀번호가 같지 않습니다</Stwarning> : null}
     </StInputWrapper>
     <StButtonWrapper>
       <StButton onClick={handleSubmit}>회원가입</StButton>
@@ -123,6 +148,10 @@ const StInputWrapper = styled.div`
 const StInputContainer = styled.div`
   position: relative;
   width: 85%;
+`
+const Stwarning = styled.span`
+  color: red;
+  right: 0px;
 `
 
 const StInput = styled.input`

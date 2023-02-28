@@ -1,60 +1,92 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components'
 import { Link, useNavigate } from 'react-router-dom';
 import { requestLogin } from '../../api/todos';
+import { useMutation } from 'react-query';
+
 
 
 
 function InputWrapper() {
-  const [id, setId] = useState('');
+  // 로그인 정보를 저장하는 함수
+const setLoginInfo = (token) => {
+  localStorage.setItem('token', token);
+};
+
+// 저장된 로그인 정보를 가져오는 함수
+const getLoginInfo = () => {
+  return localStorage.getItem('token');
+};
+
+// 저장된 로그인 정보를 삭제하는 함수
+const removeLoginInfo = () => {
+  localStorage.removeItem('token');
+};
+
+// 로그인 정보를 체크하는 함수
+const checkLoginInfo = () => {
+  const token = getLoginInfo();
+  return token ? true : false;
+};
+
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
 
+  useEffect(() => {
+    // 로그인 정보가 있으면 메인 페이지로 이동
+    if (checkLoginInfo()) {
+      navigate('/mytodo');
+    }
+  }, [navigate]);
+
+  // 추가한거
+  const loginMutation = useMutation(requestLogin, {
+    onSuccess: (response) => {
+      console.log(response)
+      alert("로그인 성공?");
+      navigate("/");
+    },
+    onError: (response) => {
+      console.log(response);
+      alert("로그인 뭔가 에러?");
+    },
+  });
+
   const handleUsernameChange = (e) => {
-    setId(e.target.value);
+    setEmail(e.target.value);
   };
 
   const handlePasswordChange = (e) => {
     setPassword(e.target.value);
   };
 
-  // const handleLogin = async () => {
-  //   try {
-  //     const response = await axios.post(`${process.env.REACT_APP_API_URL}/users`, {
-  //       id,
-  //       password,
-  //     });
-  //     const token = response.data.token;
-  //     localStorage.setItem('token', token);
-  //     const decodedToken = jwtDecode(token);
-  //     console.log(decodedToken); // jwt 토큰 해독 결과 출력
-  //     // TODO: 로그인 후 페이지 이동 등 필요한 작업 수행
-  //   } catch (error) {
-  //     console.error(error);
-  //     alert('로그인 실패');
-  //   }
-  // };
-
   const onSubmit = async (e) => {
     e.preventDefault();
-    if (!id.includes("@")) {
+    if (!email.includes("@")) {
       alert("이메일 형식을 입력하세요.");
     } else {
       try {
-        const result = await requestLogin(id, password);
-        navigate('/'); // 로그인 성공 후 메인 페이지로 이동
+        loginMutation.mutate(email, password)
+        const result = loginMutation.response.data; //추가
+        // const result = await requestLogin(email, password); //원래
+        setLoginInfo(result.token); // 로그인 정보 저장
+        navigate('/mytodo'); // 로그인 성공 후 메인 페이지로 이동
       } catch (error) {
-        console.error(error);
+        console.log(error);
         alert('로그인 실패');
       }
     }
   }
 
-
+  const onLogout = () => {
+    removeLoginInfo(); // 저장된 로그인 정보 삭제
+    navigate('/login'); // 로그아웃 후 로그인 페이지로 이동
+  };
   return(
     <>
     <StInputWrapper>
-      <StInput type="email" placeholder="아이디" value={id} onChange={handleUsernameChange}/>
+      <StInput type="email" placeholder="아이디" value={email} onChange={handleUsernameChange}/>
       <StInput type="password" placeholder="비밀번호" value={password} onChange={handlePasswordChange}/>
     </StInputWrapper>
     <StButtonWrapper>
