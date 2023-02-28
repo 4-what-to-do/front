@@ -1,6 +1,6 @@
 import React, { useState,useEffect } from 'react'
 import styled from 'styled-components'
-import { useMutation } from 'react-query';
+import { useMutation, useQuery } from 'react-query';
 import axios from 'axios';
 import { postSignup, getCheckId } from '../../api/todos';
 import { useNavigate } from 'react-router-dom';
@@ -16,6 +16,8 @@ function MembershipInputWrappert() {
   const [ischeck, setIscheck] = useState(false);
   const [isemail, setIsemail] = useState(false);
   const navigate = useNavigate();
+
+  const { isLoading, isError, data } = useQuery("checkId", getCheckId);
 
   // useEffect(() => {
   //   setSubmitDisabled(password === passwordCheck)
@@ -37,6 +39,7 @@ function MembershipInputWrappert() {
   //중복확인
   const checkIdMutation = useMutation(getCheckId, {
     onSuccess: (response) => {
+      console.log(1);
       console.log(response);
       setIsemail(response);
     },
@@ -46,6 +49,7 @@ function MembershipInputWrappert() {
     /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{8,}$/;
 
     const checkID = (e) => {
+      e.preventDefault();
       setIscheck(true);
       checkIdMutation.mutate(e.target.value);
       {ischeck && isemail !== undefined && (

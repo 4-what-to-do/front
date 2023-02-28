@@ -37,8 +37,11 @@ const postSignup = async (payload) => {
 };
 
 export const getCheckId = async (payload) => {
+  console.log(payload);
   try {
-    const response = await api.get("/users/email-check");
+    const response = await api.get("/users/email-check", {
+      params: { email: payload },
+    });
     console.log(response.data);
     return response.data.success;
   } catch (error) {
@@ -46,20 +49,20 @@ export const getCheckId = async (payload) => {
   }
 };
 
-export const requestLogin = async (email, password) => {
+export const requestLogin = async (payload) => {
   try {
     const response = await api.post(
       "/users/login",
       {
-        email,
-        password,
+        email: payload.email,
+        password: payload.password
       },
       { withCredentials: true }
     );
 
     // 로컬 스토리지에 access_token과 refresh_token 저장
-    localStorage.setItem("access_token", response.data.access_token);
-    localStorage.setItem("refresh_token", response.data.refresh_token);
+    localStorage.setItem("access_token", response.data.token);
+    // localStorage.setItem("refresh_token", response.data.refresh_token);
 
     //axios 인스턴스의 default header에 access_token 설정
     axios.defaults.headers.common[
@@ -76,7 +79,7 @@ export const requestLogin = async (email, password) => {
 export const requestLogout = async () => {
   try {
     const access_token = localStorage.getItem('access_token');
-    const response = await api.post(
+    const response = await api.get(
       "/users/logout",
       {},
       {
@@ -92,41 +95,5 @@ export const requestLogout = async () => {
     throw new Error('로그아웃 실패');
   }
 };
-
-  export const requestAccessToken = async (refresh_token) => {
-    return await api
-      .post("/users", {
-        refresh: refresh_token,
-      })
-      .then((response) => {
-        return response.data.access;
-      })
-      .catch((e) => {
-        console.log(e.response.data);
-      });
-  };
-
-  // export const checkAccessToken = async (refresh_token) => {
-  //   if (axios.defaults.headers.common["Authorization"] === undefined) {
-  //     return await requestAccessToken(refresh_token).then((response) => {
-  //       return response;
-  //     });
-  //   } else {
-  //     return axios.defaults.headers.common["Authorization"].split(" ")[1];
-  //   }
-  // };
-
-  export const checkAccessToken = async (refresh_token) => {
-    if (api.defaults.headers.common["Authorization"] === undefined) {
-      const access_token = await requestAccessToken(refresh_token);
-      api.defaults.headers.common[
-        "Authorization"
-      ] = `Bearer ${access_token}`;
-      return access_token;
-    } else {
-      return api.defaults.headers.common["Authorization"].split(" ")[1];
-    }
-  };
-
 
 export { getTodos, addTodo, removeTodo, switchTodo, postSignup };

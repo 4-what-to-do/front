@@ -41,11 +41,11 @@ const checkLoginInfo = () => {
   }, [navigate]);
 
   // 추가한거
-  const loginMutation = useMutation(requestLogin, {
+  const loginMutation = useMutation(requestLogin, { 
     onSuccess: (response) => {
       console.log(response)
-      alert("로그인 성공?");
-      navigate("/");
+      alert("로그인 성공");
+      navigate("/mytodo");
     },
     onError: (response) => {
       console.log(response);
@@ -58,6 +58,7 @@ const checkLoginInfo = () => {
   };
 
   const handlePasswordChange = (e) => {
+    console.log(password);
     setPassword(e.target.value);
   };
 
@@ -67,7 +68,8 @@ const checkLoginInfo = () => {
       alert("이메일 형식을 입력하세요.");
     } else {
       try {
-        loginMutation.mutate(email, password)
+        console.log(password)
+        loginMutation.mutate({password, email})
         const result = loginMutation.response.data; //추가
         // const result = await requestLogin(email, password); //원래
         setLoginInfo(result.token); // 로그인 정보 저장
@@ -83,6 +85,7 @@ const checkLoginInfo = () => {
     removeLoginInfo(); // 저장된 로그인 정보 삭제
     navigate('/login'); // 로그아웃 후 로그인 페이지로 이동
   };
+  
   return(
     <>
     <StInputWrapper>
