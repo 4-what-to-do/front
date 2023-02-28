@@ -20,8 +20,6 @@ const Header = styled.div`
   align-items: center;
   padding: 1rem;
   
-
-  
 `;
 
 const MyTodo = styled(Link)`

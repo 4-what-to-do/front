@@ -2,18 +2,42 @@ import React, { useState } from 'react';
 import styled,{ css } from "styled-components";
 import { MdDone } from "react-icons/md";
 import { FaRegUserCircle,FaHeart,FaRegHeart } from "react-icons/fa";
-function CategoryTodoList(){
+import { useQuery,useMutation, useQueryClient } from "react-query";
+import {communitygetTodos, getHeartCount} from './../../api/todos';
+import { useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
 
+function CategoryTodoList({match}){
+  // const category = match.params.name;
+  const {category} = useParams();
   const [isHearted, setIsHearted] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
 
+  const { isLoading, isError, data } = useQuery("communities", communitygetTodos(category));
+  
+  const { isLoadings, isErrors, count } = useQuery("count", getHeartCount(data.id));
+
+  
   const handleHeartClick = () => {
+    
     setIsHearted(!isHearted);
     setLikeCount(isHearted ? likeCount - 1 : likeCount + 1);
+    
   };
+  
+  const queryClient = useQueryClient();
+    
 
+    
     return(
-        <GridContainer>
+      <GridContainer>
+
+      {data
+        .filter((item) => item.open === true)
+        .map((item) =>{
+          
+          return(
+            <>
              <GridItem>
               <TodoHeadStyle>
                 <UserHeartWrapper>
@@ -24,98 +48,25 @@ function CategoryTodoList(){
                   <HeartIcon onClick={handleHeartClick}>
                       {isHearted ? <FaHeart /> : <FaRegHeart />}
                     </HeartIcon>
-                    <span className='count'>{likeCount}</span>
+                    <span className='count'>{count}</span>
                   </HeartWrapper>
                 </UserHeartWrapper>
                 <div className="title-wrapper">
-                  <h5>2022년2월26일</h5>
+                  <h5>{item.date}</h5>
                 </div>
               </TodoHeadStyle>
               <TodoItemStyle>
                 <CheckCircle done={true}>{true && <MdDone />}</CheckCircle>
                 <TextWrapper>
-                  <StyledText option={"공부"}>공부</StyledText>
-                  <Text>리액트 공부하기</Text>
+                  <StyledText option={item.toDoResponseDtoList.category}>{item.toDoResponseDtoList.category}</StyledText>
+                  <Text>{item.toDoResponseDtoList.content}</Text>
                 </TextWrapper>
               </TodoItemStyle>
             </GridItem>
+            </>
+            );
+          })}
 
-            <GridItem>
-            <TodoHeadStyle>
-                <UserHeartWrapper>
-                  <UserWrapper className='user'>
-                    <FaRegUserCircle /> User
-                  </UserWrapper>
-                  <HeartWrapper>
-                  <HeartIcon onClick={handleHeartClick}>
-                      {isHearted ? <FaHeart /> : <FaRegHeart />}
-                    </HeartIcon>
-                    <span className='count'>{likeCount}</span>
-                  </HeartWrapper>
-                </UserHeartWrapper>
-                <div className="title-wrapper">
-                  <h5>2022년2월26일</h5>
-                </div>
-              </TodoHeadStyle>
-                <TodoItemStyle>
-                  <CheckCircle done ={true}> {true && <MdDone />} </CheckCircle>
-                  <TextWrapper>
-                  <StyledText option={"취미"}>취미</StyledText>
-                  <Text>리액트 공부하기</Text>
-                  </TextWrapper>
-              </TodoItemStyle>
-            </GridItem>
-            <GridItem>
-            <TodoHeadStyle>
-                <UserHeartWrapper>
-                  <UserWrapper className='user'>
-                    <FaRegUserCircle /> User
-                  </UserWrapper>
-                  <HeartWrapper>
-                  <HeartIcon onClick={handleHeartClick}>
-                      {isHearted ? <FaHeart /> : <FaRegHeart />}
-                    </HeartIcon>
-                    <span className='count'>{likeCount}</span>
-                  </HeartWrapper>
-                </UserHeartWrapper>
-                <div className="title-wrapper">
-                  <h5>2022년2월26일</h5>
-                </div>
-              </TodoHeadStyle>
-                <TodoItemStyle>
-                  <CheckCircle done ={true}> {true && <MdDone />} </CheckCircle>
-                  <TextWrapper>
-                  <StyledText option={"약속"}>약속</StyledText>
-                  <Text>4/25일 항해끝</Text>
-                  </TextWrapper>
-              </TodoItemStyle>
-            </GridItem>
-            <GridItem>
-            <TodoHeadStyle>
-                <UserHeartWrapper>
-                  <UserWrapper className='user'>
-                    <FaRegUserCircle /> User
-                  </UserWrapper>
-                  <HeartWrapper>
-                  <HeartIcon onClick={handleHeartClick}>
-                      {isHearted ? <FaHeart /> : <FaRegHeart />}
-                    </HeartIcon>
-                    <span className='count'>{likeCount}</span>
-                  </HeartWrapper>
-                </UserHeartWrapper>
-                <div className="title-wrapper">
-                  <h5>2022년2월26일</h5>
-                </div>
-              </TodoHeadStyle>
-                <TodoItemStyle>
-                  <CheckCircle done ={true}> {true && <MdDone />} </CheckCircle>
-                  <TextWrapper>
-                  <StyledText option={"기타"}>기타</StyledText>
-                  <Text>5키로 빼기</Text>
-                  </TextWrapper>
-              </TodoItemStyle>
-            </GridItem>
-            
         </GridContainer>
         
     )
@@ -264,13 +215,13 @@ cursor: pointer;
 
 function getColor(option) {
   switch (option) {
-    case "공부":
+    case "STUDY":
       return "#87CEEB"; // 하늘색
-    case "취미":
+    case "EXERCISE":
       return "#47e4a2"; // 노란색
-    case "약속":
+    case "MEETING":
       return "#FF69B4"; // 분홍색
-    case "업무":
+    case "TASK":
       return "#8B008B"; // 보라색
     default:
       return "#D3D3D3"; // 회색

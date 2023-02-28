@@ -1,7 +1,10 @@
 import axios from "axios";
 
 const instance = axios.create({
-  baseURL: "http://localhost:3001",
+  baseURL: `${process.env.REACT_APP_TODOS}`,
+  headers: {
+     "Access-Control-Allow-Origin": "*",
+    }, 
 });
 
 instance.interceptors.request.use(

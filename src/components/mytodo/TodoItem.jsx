@@ -1,34 +1,105 @@
-import React from "react";
+import React ,{useState} from "react";
 import styled,{ css } from "styled-components";
 import { MdDone, MdDelete,MdOutlineDoneOutline,MdOutlineCancel } from "react-icons/md";
+import { removeTodo, checkSwitchTodo, switchTodo } from "./../../api/todos";
+import { useQuery,useMutation, useQueryClient } from "react-query";
+import {getTodos} from './../../api/todos';
+import { useSelector } from 'react-redux';
 
 function TodoItem(){
+    const { isLoading, isError, data } = useQuery("posts", getTodos);
+    const todoDate = useSelector((state)=>state.dateSlice);
+    const queryClient = useQueryClient();
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    let [editedTodoTitle, setEditedTodoTitle] = useState('');
 
+    const deleteMutation = useMutation(removeTodo, {
+      onSuccess: () => {
+        queryClient.invalidateQueries("posts");
+      },
+    });
+
+    const switchMutation = useMutation(checkSwitchTodo, {
+      onSuccess: () => {
+        queryClient.invalidateQueries("posts");
+      },
+    });
+
+    const checkSwitchMutation = useMutation(switchTodo, {
+      onSuccess: () => {
+        queryClient.invalidateQueries("posts");
+      },
+    });
+
+    const handleModalInputChange = (e,item) => {
+      editedTodoTitle = item.content;
+      setEditedTodoTitle(e.target.value);
+      const payload = {
+        content: item.content,
+        category: item.category,
+      };
+      checkSwitchMutation.mutate(payload);
+    };
+  
+    const handleModalCompleteButtonClick = () => {
+      const payload = {
+        content : editedTodoTitle
+      };
+      switchMutation.mutate(payload);
+      setIsModalOpen(false);
+    };
     
+    const handleModalCancelButtonClick = (item) => {
+    setEditedTodoTitle(item.content);
+    setIsModalOpen(false);
+    };
+
+    const checkDonehandler = (e,item) =>{
+      e.stopPropagation();
+      const payload = {
+        id:item.id,
+        done: !item.done,
+      };
+      switchMutation.mutate(payload);
+       
+    }
+
+    const handleDeleteButtonClick = (e,item) => {
+      deleteMutation.mutate(item.id);
+    }
 
     return(
         <>
-        <TodoItemStyle>
-            <CheckCircle done ={true}> {true && <MdDone />} </CheckCircle>
-            <TextWrapper>
-            <StyledText option={"공부"}>공부</StyledText>
-            <Text>리액트 공부하기</Text>
-            </TextWrapper>
-            <Remove>
-            <MdDelete />
-            </Remove>
-        </TodoItemStyle>
-        {/* <Modal isOpen={isModalOpen}>
-        <ModalInput value={editedTodoTitle} onChange={(e) => handleModalInputChange(e)} />
-        <ButtonDiv>
-        <ModalButton onClick={() => handleModalCompleteButtonClick()}>
-            <MdOutlineDoneOutline/>
-        </ModalButton>
-        <ModalButton onClick={() => handleModalCancelButtonClick()}>
-            <MdOutlineCancel/>
-        </ModalButton>
-        </ButtonDiv>
-        </Modal> */}
+        {data
+          .filter((item) => item.date === todoDate.date.date)
+          .map((item) =>{
+            return(
+              <>
+            <TodoItemStyle>
+                <CheckCircle onClick={(e,item)=>checkDonehandler(e,item)} > {item.done && <MdDone />} </CheckCircle>
+                <TextWrapper>
+                <StyledText option={item.category}>공부</StyledText>
+                <Text>리액트 공부하기</Text>
+                </TextWrapper>
+                <Remove onClick={(e,item) => handleDeleteButtonClick(e,item)}>
+                <MdDelete />
+                </Remove>
+            </TodoItemStyle>
+            <Modal isOpen={isModalOpen}>
+            <ModalInput value={editedTodoTitle} onChange={(e) => handleModalInputChange(e,item)} />
+            <ButtonDiv>
+            <ModalButton onClick={() => handleModalCompleteButtonClick(item)}>
+                <MdOutlineDoneOutline/>
+            </ModalButton>
+            <ModalButton onClick={() => handleModalCancelButtonClick(item)}>
+                <MdOutlineCancel/>
+            </ModalButton>
+            </ButtonDiv>
+            </Modal>
+            </>
+            );
+         })}
+        
         </>
         
         
@@ -100,13 +171,13 @@ const StyledText = styled.div`
 
 function getColor(option) {
     switch (option) {
-      case "공부":
+      case "STUDY":
         return "#87CEEB"; // 하늘색
-      case "취미":
-        return "#FFFF00"; // 노란색
-      case "약속":
+      case "EXERCISE":
+        return "#47e4a2"; // 노란색
+      case "MEETING":
         return "#FF69B4"; // 분홍색
-      case "업무":
+      case "TASK":
         return "#8B008B"; // 보라색
       default:
         return "#D3D3D3"; // 회색

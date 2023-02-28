@@ -1,16 +1,29 @@
 import TodoItem from './TodoItem'
 import styled from 'styled-components';
 import PublicButtonGroup from './PublicButtonGroup'
+import { useQuery,useMutation, useQueryClient } from "react-query";
+import { useDispatch, useSelector } from "react-redux";
+import {getTodos} from './../../api/todos';
 
 function MyTodoListWrapper(){
+  const { data } = useQuery("posts", getTodos);
+  const todoDate = useSelector((state)=>state.dateSlice);
 
-  // const { isLoading, isError, data } = useQuery(`posts/todo?data=${date}`, getTodos);
-  
+  const undoneTasksCount = data
+          .filter((item) => item.date === todoDate.date.date)
+          .filter((item) => item.done).length;
+
+  let doneTasksCount = data
+        .filter((item) => item.date === todoDate.date.date)
+        .filter((item) => item.done).length;
+  const totalTasksCount = data.todo.length;
+  doneTasksCount = totalTasksCount-doneTasksCount;
+  const progress = (undoneTasksCount / totalTasksCount) * 100;
     return(
         <TodoListStyle>
-            <TasksLeft>할일 3개 남음</TasksLeft>  
+            <TasksLeft>할일 {doneTasksCount}개 남음</TasksLeft>  
             <ProgressBarWrapper>
-                <ProgressBar/>
+                <ProgressBar progress={progress}/>
             </ProgressBarWrapper>
                 <TodoItem/>
             <PublicButtonGroup/>
@@ -44,7 +57,5 @@ const ProgressBar = styled.div`
   height: 100%;
   border-radius: 20px;
   background-color: #5ee2bb;
-  width: 60%;
-  
+  width: ${(props) => props.progress}%;
 `;
-// ${(props) => props.progress}%;

@@ -2,28 +2,77 @@ import styled, { css } from 'styled-components';
 import React, { useEffect, useState } from 'react';
 import { MdAdd } from 'react-icons/md';
 import { useDispatch, useSelector } from "react-redux";
+import { addTodo } from '../../api/todos';
+import { useMutation, useQueryClient } from 'react-query';
+
 
 function PublicButtonGroup(){
     const [open, setOpen] = useState(false);
     const onToggle = () => setOpen(!open);
-    const handleFormSubmit = (e) => {
-        e.preventDefault();
+    
+    const queryClient = useQueryClient();
+    const todoDate = useSelector((state)=>state.dateSlice);
+
+    const mutation = useMutation(addTodo, {
+      onSuccess: (data) => {
+        console.log("data", data);
+        queryClient.invalidateQueries("posts");
+      },
+    });
+
+    
+    const [content, setContent] = useState("");
+    
+    const [category, setCategory] = useState("");
+    
+
+     // 에러 메시지 발생 함수
+   
+     const onChangehandler = (e) => {
+      setContent(e.target.value);
     }
+
+    const onSelectHandler = (event) => {
+      setCategory(event.target.value);
+    };
+
+    const handleSubmitButtonClick = async (event) => {
+      // submit의 고유 기능인, 새로고침(refresh)을 막아주는 역함
+      event.preventDefault();
+  
+     
+      // 추가하려는 todo를 newTodo라는 객체로 세로 만듦
+      const newTodo = {
+        content,
+        done:false,
+        category,
+        date:todoDate.date.date,
+        
+      };
+  
+
+      mutation.mutate(newTodo);
+
+      setContent("");
+      
+    };
     
     return(
         <>
             {open && (
                 <AddFormPosition>
-                    <AddFormStyle onSubmit={handleFormSubmit}>
+                    <AddFormStyle onSubmit={handleSubmitButtonClick}>
                         <InputWrapper>
-                            <Select>
-                                <option>공부</option>
-                                <option>취미</option>
-                                <option>약속</option>
-                                <option>업무</option>
-                                <option>기타</option>
+                            <Select value={category} onSelect={onSelectHandler}>
+                              <option value="STUDY">공부</option>
+                              <option value="EXERCISE">취미</option>
+                              <option value="MEETING">약속</option>
+                              <option value="TASK">업무</option>
+                              <option value="ETC">기타</option>
                             </Select>
-                            <Input />
+                            <Input 
+                            value={content}
+                            onChange={(e)=>onChangehandler(e)}/>
                         </InputWrapper>
                     </AddFormStyle>
                 </AddFormPosition>

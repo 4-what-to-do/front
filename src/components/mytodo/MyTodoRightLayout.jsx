@@ -1,12 +1,9 @@
 import MyTodoListWrapper from './MyTodoListWrapper';
 import styled from 'styled-components';
-import { useState,useEffect } from 'react';
-import { getTodos } from "./../../api/todos";
-import { useQuery } from "react-query";
+import { useState, useEffect } from 'react';
 import { BsToggleOff, BsToggleOn } from 'react-icons/bs';
 import { useSelector } from 'react-redux';
-import { useMutation, useQueryClient } from "react-query";
-import { removeTodo, switchTodo } from "./../../api/todos";
+
 
 function MyTodoRightLayout() {
   const [showCompleted, setShowCompleted] = useState(true);
@@ -17,7 +14,9 @@ function MyTodoRightLayout() {
     setIsOn(prevState => !prevState);
   };
 
-  // const { isLoading, isError, data } = useQuery(`posts/todo?data=${date}`, getTodos);
+  
+
+  
 
   // if (isLoading) {
   //   return <p>로딩중입니다....!</p>;
@@ -27,21 +26,10 @@ function MyTodoRightLayout() {
   //   return <p>오류가 발생하였습니다...!</p>;
   // }
 
-  // function Todo({ todo, isActive }) {
-  // const queryClient = useQueryClient();
-  // // 삭제 확인 용 메시지 관리
+  
+  // 삭제 확인 용 메시지 관리
 
-  // const deleteMutation = useMutation(removeTodo, {
-  //   onSuccess: () => {
-  //     queryClient.invalidateQueries("todos");
-  //   },
-  // });
-
-  // const switchMutation = useMutation(switchTodo, {
-  //   onSuccess: () => {
-  //     queryClient.invalidateQueries("todos");
-  //   },
-  // });
+  
 
 
   return (
