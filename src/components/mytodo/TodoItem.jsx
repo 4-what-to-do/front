@@ -6,12 +6,15 @@ import { useQuery,useMutation, useQueryClient } from "react-query";
 import {getTodos} from './../../api/todos';
 import { useSelector } from 'react-redux';
 
-function TodoItem(){
-    const { isLoading, isError, data } = useQuery("posts", getTodos);
-    const todoDate = useSelector((state)=>state.dateSlice);
+function TodoItem({ date }){
+  const todoDate = useSelector((state)=>state.dateSlice);
+  console.log(date);
+    const { isLoading, isError, data } = useQuery("posts", getTodos(date));
+    
     const queryClient = useQueryClient();
     const [isModalOpen, setIsModalOpen] = useState(false);
     let [editedTodoTitle, setEditedTodoTitle] = useState('');
+    
 
     const deleteMutation = useMutation(removeTodo, {
       onSuccess: () => {
@@ -67,15 +70,18 @@ function TodoItem(){
     const handleDeleteButtonClick = (e,item) => {
       deleteMutation.mutate(item.id);
     }
-
+// date !== ""
+// date && data && data.map
+// 1. network 통신 성공
+// 2. 저 코드를 쓰세요
+// date !== "" && data && data.map
     return(
         <>
-        {data
-          .filter((item) => item.date === todoDate.date.date)
-          .map((item) =>{
+        {date && data 
+          && data.map((item) =>{
             return(
               <>
-            <TodoItemStyle>
+            <TodoItemStyle key={item.id}>
                 <CheckCircle onClick={(e,item)=>checkDonehandler(e,item)} > {item.done && <MdDone />} </CheckCircle>
                 <TextWrapper>
                 <StyledText option={item.category}>공부</StyledText>

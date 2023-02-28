@@ -3,8 +3,8 @@ import axios from "axios";
 const instance = axios.create({
   baseURL: `${process.env.REACT_APP_TODOS}`,
   headers: {
-     "Access-Control-Allow-Origin": "*",
-    }, 
+    "Access-Control-Allow-Origin": "*",
+  },
 });
 
 instance.interceptors.request.use(
@@ -31,9 +31,6 @@ instance.interceptors.response.use(
     console.log("인터셉트 응답 못받았어요...ㅠㅠ");
     return Promise.reject(error);
   }
-
-  
-
 );
 
 export default instance;

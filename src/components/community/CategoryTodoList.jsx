@@ -16,7 +16,7 @@ function CategoryTodoList({match}){
   const { isLoading, isError, data } = useQuery("communities", communitygetTodos(category));
   
   const { isLoadings, isErrors, count } = useQuery("count", getHeartCount(data.id));
-
+  
   
   const handleHeartClick = () => {
     

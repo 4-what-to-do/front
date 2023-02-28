@@ -3,35 +3,43 @@ import styled from 'styled-components';
 import { useState, useEffect } from 'react';
 import { BsToggleOff, BsToggleOn } from 'react-icons/bs';
 import { useSelector } from 'react-redux';
+import { publicSwitchTodo } from "./../../api/todos";
+import { useQuery,useMutation, useQueryClient } from "react-query";
+import {getTodos} from './../../api/todos';
 
 
 function MyTodoRightLayout() {
+
+  const { isLoading, isError, data } = useQuery("posts", getTodos);
   const [showCompleted, setShowCompleted] = useState(true);
   const [isOn, setIsOn] = useState(false);
+  const queryClient = useQueryClient();
   const todoDate = useSelector((state)=>state.dateSlice);
   console.log(todoDate.date)
+  
+
+  const publicswitchMutation = useMutation( publicSwitchTodo, {
+    onSuccess: () => {
+      queryClient.invalidateQueries("posts");
+    },
+  });
+
   const handleToggle = () => {
+
+    const datas = data.filter((item) => item.date === todoDate.date.date)
     setIsOn(prevState => !prevState);
+    const payload = {
+      id:datas.id,
+      open:!isOn,
+
+    }
+    publicswitchMutation.mutate(payload);
+
+    
   };
 
   
-
   
-
-  // if (isLoading) {
-  //   return <p>로딩중입니다....!</p>;
-  // }
-
-  // if (isError) {
-  //   return <p>오류가 발생하였습니다...!</p>;
-  // }
-
-  
-  // 삭제 확인 용 메시지 관리
-
-  
-
-
   return (
     <TodoLayoutStyle>
       <TodoHeadStyle>

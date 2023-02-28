@@ -6,26 +6,28 @@ import { useDispatch, useSelector } from "react-redux";
 import {getTodos} from './../../api/todos';
 
 function MyTodoListWrapper(){
-  const { data } = useQuery("posts", getTodos);
+
+  // const { data } = useQuery("posts", getTodos);
   const todoDate = useSelector((state)=>state.dateSlice);
 
-  const undoneTasksCount = data
-          .filter((item) => item.date === todoDate.date.date)
-          .filter((item) => item.done).length;
+  // const undoneTasksCount = data
+  //         .filter((item) => item.date === todoDate.date.date)
+  //         .filter((item) => item.done).length;
 
-  let doneTasksCount = data
-        .filter((item) => item.date === todoDate.date.date)
-        .filter((item) => item.done).length;
-  const totalTasksCount = data.todo.length;
-  doneTasksCount = totalTasksCount-doneTasksCount;
-  const progress = (undoneTasksCount / totalTasksCount) * 100;
+  // let doneTasksCount = data
+  //       .filter((item) => item.date === todoDate.date.date)
+  //       .filter((item) => item.done).length;
+  // const totalTasksCount = data.todo.length;
+  // doneTasksCount = totalTasksCount-doneTasksCount;
+  // const progress = (undoneTasksCount / totalTasksCount) * 100;
+
     return(
         <TodoListStyle>
-            <TasksLeft>할일 {doneTasksCount}개 남음</TasksLeft>  
+            <TasksLeft>할일 3개 남음</TasksLeft>  
             <ProgressBarWrapper>
-                <ProgressBar progress={progress}/>
+                <ProgressBar progress={30}/>
             </ProgressBarWrapper>
-                <TodoItem/>
+                <TodoItem date={todoDate.date.date}/>
             <PublicButtonGroup/>
         </TodoListStyle>
     )

@@ -3,7 +3,9 @@ import MytodoLeftLayout from './MyTodoLeftLayout'
 import MytodoRightLayout from './MyTodoRightLayout'
 import styled from 'styled-components';
 
+
 function MyTodoLayout(){
+  
     return(
         <Container>
             <Head>

@@ -32,8 +32,9 @@ function PublicButtonGroup(){
       setContent(e.target.value);
     }
 
-    const onSelectHandler = (event) => {
-      setCategory(event.target.value);
+    const onSelectHandler = (e) => {
+      e.preventDefault();
+      setCategory(e.target.value);
     };
 
     const handleSubmitButtonClick = async (event) => {
@@ -45,7 +46,7 @@ function PublicButtonGroup(){
       const newTodo = {
         content,
         done:false,
-        category,
+        category:category,
         date:todoDate.date.date,
         
       };
@@ -63,7 +64,7 @@ function PublicButtonGroup(){
                 <AddFormPosition>
                     <AddFormStyle onSubmit={handleSubmitButtonClick}>
                         <InputWrapper>
-                            <Select value={category} onSelect={onSelectHandler}>
+                            <Select value={category} onChange={(e)=>onSelectHandler(e)}>
                               <option value="STUDY">공부</option>
                               <option value="EXERCISE">취미</option>
                               <option value="MEETING">약속</option>
