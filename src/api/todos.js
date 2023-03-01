@@ -4,13 +4,14 @@ import api from "./axios";
 export const getTodos = async (date) => {
   
   try {
-    console.log(date);
+    
     const response = await api.get("/posts/todo", {
       params: { date: date },
       
     });
-    console.log(response.data);
-    return response;
+    
+    return response.data;
+
   } catch (error) {
     console.log(error);
   }
@@ -18,16 +19,29 @@ export const getTodos = async (date) => {
 };
 
 export const communitygetTodos = async (category) => {
-  const response = await api.get("/posts/communities", {
-
-    params: { category: category },
-    
-  });
-
-  const count = response.data.map((item)=>item.count)
-    return [response,count];
-
+  try {
+    if(category === undefined){
+      const response = await api.get("/posts/communities", {
+      });
+      console.log(response.data);
+      return response.data;
+      
+    }  
+    else{
+      const response = await api.get("/posts/communities/category", {
+        params: { category: category },
+      });
+      console.log(response.data);
+      return response.data;
+    }
+  
+  } 
+  catch (error) {
+    console.log(error);
+  }
 };
+  
+ 
 
 //todo list 작성
 export  const addTodo = async (newTodo) => {
@@ -35,15 +49,15 @@ export  const addTodo = async (newTodo) => {
     };
     
 
-export  const getHeartCount = async (id) => {
+export  const getHeartCount = async (count) => {
     await api.get("/posts/communities/todo/like/",{
-      params: { postid: id },
+      params: { count: count },
     });
   };
 
 export  const removeTodo = async (id) => {
     try{
-      await api.delete(`/posts/${id}`);
+      await api.delete(`/posts/todo/${id}`);
     }
     catch{
       return null;
@@ -77,11 +91,15 @@ export  const removeTodo = async (id) => {
 
   export const publicSwitchTodo = async (payload) => {
     try{
-      await api.put(`/posts/open/${payload.id}`, {
+      await api.put(`/posts/open/`, {
+        date:payload.date,
         open: payload.open,
+        
       });
+      
     }
     catch{
+      console.log(payload);
       return null;
     }
   };
@@ -144,23 +162,16 @@ export const requestLogin = async (payload) => {
 
 export const requestLogout = async () => {
   try {
-    const access_token = localStorage.getItem('access_token');
-    const response = await api.get(
-      "/users/logout",
-      {},
-      {
-        headers: {
-          Authorization: `Bearer ${access_token}`,
-        },
-      },
-    );
-    localStorage.removeItem('access_token');
-    return response;
+  localStorage.removeItem('access_token');
+  const response = await api.get(
+  "/users/logout",
+  );
+  return response;
   } catch (error) {
-    console.error(error);
-    throw new Error('로그아웃 실패');
+  console.error(error);
+  
   }
-};
+  };
 
 
 

@@ -14,20 +14,22 @@ function MyTodoHeader(){
   
   const logoutMutation = useMutation(requestLogout, {
     onSuccess: (response) => {
-      console.log(response);
-      localStorage.removeItem('access_token');
+    console.log(response);
     },
-  });
-
-  const handleLogout = (e) => {
+    onError: (response) => {
+    console.log(response);
+    },
+    });
+    
+    const handleLogout = (e) => {
     e.preventDefault();
     try {
-      logoutMutation.mutate("access_token");
-      navigate('/');
+    logoutMutation.mutate("access_token");
+    navigate('/');
     } catch (error) {
-      console.log(error);
+    console.log(error);
     }
-  };
+    };
   
 
     return(

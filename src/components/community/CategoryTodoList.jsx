@@ -1,75 +1,89 @@
 import React, { useState } from 'react';
-import styled,{ css } from "styled-components";
+import styled, { css } from "styled-components";
 import { MdDone } from "react-icons/md";
-import { FaRegUserCircle,FaHeart,FaRegHeart } from "react-icons/fa";
-import { useQuery,useMutation, useQueryClient } from "react-query";
-import {communitygetTodos, getHeartCount} from './../../api/todos';
+import { FaRegUserCircle, FaHeart, FaRegHeart } from "react-icons/fa";
+import { useQuery, useMutation, useQueryClient } from "react-query";
+import { communitygetTodos, communityChoiceTodos } from './../../api/todos';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 
-function CategoryTodoList({match}){
+function CategoryTodoList() {
   // const category = match.params.name;
-  const {category} = useParams();
+  const { category } = useParams();
   const [isHearted, setIsHearted] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
+  const queryClient = useQueryClient();
+  const { id } = useParams();
+  const queryKey = "community" + id;
+  const { isLoading, isError, data } = useQuery(queryKey, () => communitygetTodos(id),{
+    onSuccess: () => {
+          
+        },
+        onError: () => {
+          console.log('error')
+        }
+  });
+  
 
-  const { isLoading, isError, data } = useQuery("communities", communitygetTodos(category));
-  
-  const { isLoadings, isErrors, count } = useQuery("count", getHeartCount(data.id));
-  
-  
+
   const handleHeartClick = () => {
-    
     setIsHearted(!isHearted);
     setLikeCount(isHearted ? likeCount - 1 : likeCount + 1);
     
+    console.log(data)
   };
-  
-  const queryClient = useQueryClient();
-    
 
-    
-    return(
-      <GridContainer>
+  if (isLoading) {
+    return <p>로딩중입니다....!</p>;
+  }
 
-      {data
-        .filter((item) => item.open === true)
-        .map((item) =>{
-          
-          return(
-            <>
-             <GridItem>
-              <TodoHeadStyle>
-                <UserHeartWrapper>
-                  <UserWrapper className='user'>
-                    <FaRegUserCircle /> User
-                  </UserWrapper>
-                  <HeartWrapper>
-                  <HeartIcon onClick={handleHeartClick}>
-                      {isHearted ? <FaHeart /> : <FaRegHeart />}
-                    </HeartIcon>
-                    <span className='count'>{count}</span>
-                  </HeartWrapper>
-                </UserHeartWrapper>
-                <div className="title-wrapper">
-                  <h5>{item.date}</h5>
-                </div>
-              </TodoHeadStyle>
-              <TodoItemStyle>
-                <CheckCircle done={true}>{true && <MdDone />}</CheckCircle>
-                <TextWrapper>
-                  <StyledText option={item.toDoResponseDtoList.category}>{item.toDoResponseDtoList.category}</StyledText>
-                  <Text>{item.toDoResponseDtoList.content}</Text>
-                </TextWrapper>
-              </TodoItemStyle>
-            </GridItem>
-            </>
-            );
-          })}
+  if (isError) {
+    return <p>오류가 발생하였습니다...!</p>;
+  }
 
-        </GridContainer>
-        
-    )
+
+  return (
+    <GridContainer>
+    {data && data.map((item) => {
+      if(item.open && item.toDoResponseDtoList.length != 0) {
+        return (
+        <GridItem key={item.postId}>
+          <TodoHeadStyle>
+            <UserHeartWrapper>
+              <UserWrapper className='user'>
+                <FaRegUserCircle /> &nbsp; { item.nickname}
+              </UserWrapper>
+              <HeartWrapper>
+                <HeartIcon onClick={handleHeartClick}>
+                  {isHearted ? <FaHeart /> : <FaRegHeart />}
+                </HeartIcon>
+                <span className='count'>{item.Count}</span>
+              </HeartWrapper>
+            </UserHeartWrapper>
+            <div className="title-wrapper">
+              <h5>{item.date}</h5>
+            </div>
+          </TodoHeadStyle>
+          {item.toDoResponseDtoList.map((todo) => {
+            return (
+          <TodoItemStyle>
+            <CheckCircle done={true}>{true && <MdDone />}</CheckCircle>
+            <TextWrapper>
+              <StyledText option={todo.category}>{todo.category}</StyledText>
+              <Text>{todo.content}</Text>
+            </TextWrapper>
+          </TodoItemStyle>
+            )
+      })
+      }
+        </GridItem>
+        );
+      } else {
+        return null;
+      }
+    })}
+    </GridContainer>
+  )
 }
 
 const GridContainer = styled.div`
@@ -192,8 +206,8 @@ justify-content: center;
 margin-right: 20px;
 cursor: pointer;
 ${(props) =>
-  props.done &&
-  css`
+    props.done &&
+    css`
     border: 1px solid #38d9a9;
     color: #38d9a9;
   `}
@@ -234,8 +248,8 @@ flex: 1;
 font-size: 18px;
 color: #495057;
 ${(props) =>
-  props.done &&
-  css`
+    props.done &&
+    css`
     color: #ced4da;
   `}
 cursor: pointer;

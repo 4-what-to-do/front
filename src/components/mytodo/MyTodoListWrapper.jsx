@@ -1,39 +1,64 @@
+import { useState, useEffect } from 'react';
 import TodoItem from './TodoItem'
 import styled from 'styled-components';
 import PublicButtonGroup from './PublicButtonGroup'
 import { useQuery,useMutation, useQueryClient } from "react-query";
 import { useDispatch, useSelector } from "react-redux";
 import {getTodos} from './../../api/todos';
-
+import {BiConfused} from 'react-icons/bi'
+import {BsEmojiSmileUpsideDown} from 'react-icons/bs'
 function MyTodoListWrapper(){
 
-  // const { data } = useQuery("posts", getTodos);
   const todoDate = useSelector((state)=>state.dateSlice);
+  const date = todoDate.date.date
+  const queryKey = "posts_" + date;
 
-  // const undoneTasksCount = data
-  //         .filter((item) => item.date === todoDate.date.date)
-  //         .filter((item) => item.done).length;
+  const { data, error, isLoading } = useQuery(queryKey,()=> getTodos(date), {
+    onSuccess: () => {
+          
+        },
+        onError: () => {
+          console.log('error')
+        }
+  });
+  
+  
+  
+  
+  let undoneTasksCount = 0;
+  let doneTasksCount = 0;
+  let totalTasksCount = 0;
+  let progress = 0;
 
-  // let doneTasksCount = data
-  //       .filter((item) => item.date === todoDate.date.date)
-  //       .filter((item) => item.done).length;
-  // const totalTasksCount = data.todo.length;
-  // doneTasksCount = totalTasksCount-doneTasksCount;
-  // const progress = (undoneTasksCount / totalTasksCount) * 100;
+  if (data) {
+    
+    undoneTasksCount = data.filter((item) => !item.done).length;
+    doneTasksCount = data.filter((item) => item.done).length;
+    totalTasksCount = data.length;
+    progress = (doneTasksCount / totalTasksCount) * 100;
+    
+  }
 
-    return(
-        <TodoListStyle>
-            <TasksLeft>할일 3개 남음</TasksLeft>  
-            <ProgressBarWrapper>
-                <ProgressBar progress={30}/>
-            </ProgressBarWrapper>
-                <TodoItem date={todoDate.date.date}/>
-            <PublicButtonGroup/>
-        </TodoListStyle>
-    )
+  return(
+    <TodoListStyle>
+      
+      {
+        
+      undoneTasksCount==0 ?<TasksLeft> 할일 끝! <BsEmojiSmileUpsideDown fontSize={24}/></TasksLeft> :<TasksLeft>할일 {undoneTasksCount}개 남음 <BiConfused fontSize={24}/></TasksLeft>  
+      
+      }
+    
+      <ProgressBarWrapper>
+        <ProgressBar progress={progress}/>
+      </ProgressBarWrapper>
+      <TodoItem/>
+      <PublicButtonGroup/>
+    </TodoListStyle>
+  )
 }
 
 export default MyTodoListWrapper;
+
 
 const TodoListStyle = styled.div`
   flex: 1;
@@ -60,4 +85,5 @@ const ProgressBar = styled.div`
   border-radius: 20px;
   background-color: #5ee2bb;
   width: ${(props) => props.progress}%;
+  transition: width 0.5s ease-in-out;
 `;

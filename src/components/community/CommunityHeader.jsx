@@ -1,15 +1,40 @@
 import React from 'react';
 import styled from 'styled-components';
-import { Link } from "react-router-dom";
+import { Link, useNavigate} from "react-router-dom";
 import { HiOutlineLogout } from 'react-icons/hi';
-import {BiUserPin} from 'react-icons/bi';
-function CommunutyHeader(){
-return(
-<Header>
-<MyTodo to={'/mytodo'}><BiUserPin fontSize="30px"/></MyTodo>
-<Logout><HiOutlineLogout fontSize="30px"/></Logout>
-</Header>
-)
+import { BiUserPin } from 'react-icons/bi';
+import { useMutation } from 'react-query';
+import { requestLogout } from '../../api/todos';
+
+
+
+function CommunutyHeader() {
+    const navigate = useNavigate();
+
+    const logoutMutation = useMutation(requestLogout, {
+        onSuccess: (response) => {
+            console.log(response);
+        },
+        onError: (response) => {
+            console.log(response);
+        },
+    });
+
+    const handleLogout = (e) => {
+        e.preventDefault();
+        try {
+            logoutMutation.mutate("access_token");
+            navigate('/');
+        } catch (error) {
+            console.log(error);
+        }
+    };
+    return (
+        <Header>
+            <MyTodo to={'/mytodo'}><BiUserPin fontSize="30px" /></MyTodo>
+            <Logout onClick={handleLogout}><HiOutlineLogout fontSize="30px" /></Logout>
+        </Header>
+    )
 }
 
 export default CommunutyHeader;

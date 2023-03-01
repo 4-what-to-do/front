@@ -47,6 +47,6 @@ justify-content: center;
 align-items: center;
 width: 100%;
 max-height: 200px;
-margin-top: 30px;
+margin-top: 70px;
 margin-bottom: 30px;
 `;

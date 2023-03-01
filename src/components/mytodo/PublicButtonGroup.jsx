@@ -3,32 +3,47 @@ import React, { useEffect, useState } from 'react';
 import { MdAdd } from 'react-icons/md';
 import { useDispatch, useSelector } from "react-redux";
 import { addTodo } from '../../api/todos';
-import { useMutation, useQueryClient } from 'react-query';
-
+import {getTodos} from './../../api/todos';
+import { useQuery,useMutation, useQueryClient } from "react-query";
 
 function PublicButtonGroup(){
+
+  const queryClient = useQueryClient();
+  const todoDate = useSelector((state)=>state.dateSlice);
+  const date = todoDate.date.date;
+  const queryKey = "posts_" + date;
+
+  const { data, error, isLoading } = useQuery(queryKey, getTodos(date), {
+    
+    onSuccess: () => {
+          queryClient.invalidateQueries(queryKey);
+        },
+        onError: () => {
+          console.log('error')
+        }
+  });
     const [open, setOpen] = useState(false);
     const onToggle = () => setOpen(!open);
     
-    const queryClient = useQueryClient();
-    const todoDate = useSelector((state)=>state.dateSlice);
-
+    
+    
     const mutation = useMutation(addTodo, {
-      onSuccess: (data) => {
-        console.log("data", data);
-        queryClient.invalidateQueries("posts");
+      onSuccess: () => {
+        queryClient.invalidateQueries(queryKey);
+        
       },
     });
 
     
     const [content, setContent] = useState("");
     
-    const [category, setCategory] = useState("");
-    
+    const [category, setCategory] = useState('STUDY');
+    const [todos,setTodos] = useState([]);
 
      // 에러 메시지 발생 함수
    
      const onChangehandler = (e) => {
+      e.preventDefault();
       setContent(e.target.value);
     }
 
@@ -40,23 +55,34 @@ function PublicButtonGroup(){
     const handleSubmitButtonClick = async (event) => {
       // submit의 고유 기능인, 새로고침(refresh)을 막아주는 역함
       event.preventDefault();
-  
-     
       // 추가하려는 todo를 newTodo라는 객체로 세로 만듦
       const newTodo = {
-        content,
+        content:content,
         done:false,
         category:category,
         date:todoDate.date.date,
         
       };
-  
+      try {
+        // addTodo 함수 실행
+        await mutation.mutate(newTodo);
+        setTodos([...todos,newTodo]);
+        
+        // 입력 칸 초기화
+        setContent("");
+    
+        // 추가된 할일(todo) 즉시 화면에 보여주기 위해 상태(state) 업데이트
+        
+      } catch (error) {
+        console.error(error);
+      }
+      }
+        
 
-      mutation.mutate(newTodo);
-
-      setContent("");
+        
       
-    };
+    
+  
     
     return(
         <>

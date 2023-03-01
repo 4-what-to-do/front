@@ -9,16 +9,28 @@ import {getTodos} from './../../api/todos';
 
 
 function MyTodoRightLayout() {
-
   const todoDate = useSelector((state)=>state.dateSlice);
-  const { isLoading, isError, data } = useQuery("posts",()=> getTodos(todoDate.date.date));
-  console.log(todoDate.date.date);
-  console.log(data)
+  const date = todoDate.date.date
+  const queryKey = "posts_" + date;
+
+  const { data, error, isLoading } = useQuery(queryKey,()=> getTodos(date), {
+    onSuccess: () => {
+          
+        },
+        onError: () => {
+          console.log('error')
+        }
+  });
+  
+
+  
+  
+
   const [showCompleted, setShowCompleted] = useState(true);
   const [isOn, setIsOn] = useState(false);
   const queryClient = useQueryClient();
 
-  console.log(todoDate.date)
+  
   
 
   const publicswitchMutation = useMutation( publicSwitchTodo, {
@@ -28,19 +40,19 @@ function MyTodoRightLayout() {
   });
 
   const handleToggle = () => {
-
-    const datas = data.filter((item) => item.date === todoDate.date.date)
-    setIsOn(prevState => !prevState);
+    
+    setIsOn(!isOn);
+   
     const payload = {
-      id:datas.id,
+      date:date,
       open:!isOn,
 
     }
     publicswitchMutation.mutate(payload);
-
+    
     
   };
-
+  
   
   
   return (
@@ -59,7 +71,7 @@ function MyTodoRightLayout() {
         
         <span className="day">{todoDate.date.weekDay}요일</span>
       </TodoHeadStyle>
-      <MyTodoListWrapper showCompleted={showCompleted} />
+      <MyTodoListWrapper data = {data} showCompleted={showCompleted} />
     </TodoLayoutStyle>
   );
 }

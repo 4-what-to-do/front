@@ -6,48 +6,71 @@ import { useQuery,useMutation, useQueryClient } from "react-query";
 import {getTodos} from './../../api/todos';
 import { useSelector } from 'react-redux';
 
-function TodoItem({ date }){
+function TodoItem(){
+  const queryClient = useQueryClient();
   const todoDate = useSelector((state)=>state.dateSlice);
-  console.log(date);
-    const { isLoading, isError, data } = useQuery("posts", () => getTodos(date));
+  const date = todoDate.date.date;
+  
+  const queryKey = "posts_" + date;
+  
+
+    const { data, error, isLoading } = useQuery(queryKey,()=> getTodos(date), {
+      onSuccess: () => {
+            
+          },
+          onError: () => {
+            console.log('error')
+          }
+    });
+
     
-    const queryClient = useQueryClient();
+    
     const [isModalOpen, setIsModalOpen] = useState(false);
     let [editedTodoTitle, setEditedTodoTitle] = useState('');
-    
+    const [selectedOption, setSelectedOption] = useState('STUDY');
 
     const deleteMutation = useMutation(removeTodo, {
       onSuccess: () => {
-        queryClient.invalidateQueries("posts");
+        queryClient.invalidateQueries(queryKey);
       },
     });
 
-    const switchMutation = useMutation(checkSwitchTodo, {
+    const checkSwitchMutation = useMutation(checkSwitchTodo, {
       onSuccess: () => {
-        queryClient.invalidateQueries("posts");
+        queryClient.invalidateQueries(queryKey);
       },
     });
 
-    const checkSwitchMutation = useMutation(switchTodo, {
+    const switchMutation = useMutation(switchTodo, {
       onSuccess: () => {
-        queryClient.invalidateQueries("posts");
+        queryClient.invalidateQueries(queryKey);
       },
     });
 
-    const handleModalInputChange = (e,item) => {
-      editedTodoTitle = item.content;
+    const handleSelectChange = (e) => {
+      setSelectedOption(e.target.value);
+    };
+
+    const handleTextClick = (e,item) => {
+      e.stopPropagation();
+      setEditedTodoTitle(item.content);
+      setIsModalOpen(true);
+    };
+    
+    const handleModalInputChange = (e) => {
+      e.stopPropagation();
       setEditedTodoTitle(e.target.value);
-      const payload = {
-        content: item.content,
-        category: item.category,
-      };
-      checkSwitchMutation.mutate(payload);
+      
     };
   
-    const handleModalCompleteButtonClick = () => {
+    const handleModalCompleteButtonClick = (id) => {
+      
       const payload = {
-        content : editedTodoTitle
+        id:id,
+        content : editedTodoTitle,
+        category: selectedOption
       };
+      console.log(selectedOption);
       switchMutation.mutate(payload);
       setIsModalOpen(false);
     };
@@ -63,12 +86,13 @@ function TodoItem({ date }){
         id:item.id,
         done: !item.done,
       };
-      switchMutation.mutate(payload);
-       
-    }
+      checkSwitchMutation.mutate(payload);
 
-    const handleDeleteButtonClick = (e,item) => {
+    }
+    
+    const handleDeleteButtonClick = (item) => {
       deleteMutation.mutate(item.id);
+      
     }
 // date !== ""
 // date && data && data.map
@@ -82,19 +106,26 @@ function TodoItem({ date }){
             return(
               <>
             <TodoItemStyle key={item.id}>
-                <CheckCircle onClick={(e,item)=>checkDonehandler(e,item)} > {item.done && <MdDone />} </CheckCircle>
+                <CheckCircle done={item.done} onClick={(e)=>checkDonehandler(e,item)} > {item.done && <MdDone />} </CheckCircle>
                 <TextWrapper>
-                <StyledText option={item.category}>공부</StyledText>
-                <Text>리액트 공부하기</Text>
+                <StyledText option={item.category}>{item.category}</StyledText>
+                <Text done={item.done} onClick={(e) => handleTextClick(e,item)}>{item.content}</Text>
                 </TextWrapper>
-                <Remove onClick={(e,item) => handleDeleteButtonClick(e,item)}>
+                <Remove onClick={() => handleDeleteButtonClick(item)}>
                 <MdDelete />
                 </Remove>
-            </TodoItemStyle>
+            </TodoItemStyle>            
             <Modal isOpen={isModalOpen}>
-            <ModalInput value={editedTodoTitle} onChange={(e) => handleModalInputChange(e,item)} />
+            <Select value={selectedOption} onChange={(e) => handleSelectChange(e)}>
+                    <option value="STUDY">공부</option>
+                    <option value="EXERCISE">취미</option>
+                    <option value="MEETING">약속</option>
+                    <option value="TASK">업무</option>
+                    <option value="ETC">기타</option>
+            </Select>
+            <ModalInput value={editedTodoTitle} onChange={(e) => handleModalInputChange(e)} />
             <ButtonDiv>
-            <ModalButton onClick={() => handleModalCompleteButtonClick(item)}>
+            <ModalButton onClick={(e) => handleModalCompleteButtonClick(item.id)}>
                 <MdOutlineDoneOutline/>
             </ModalButton>
             <ModalButton onClick={() => handleModalCancelButtonClick(item)}>
@@ -103,6 +134,7 @@ function TodoItem({ date }){
             </ButtonDiv>
             </Modal>
             </>
+          
             );
          })}
         
@@ -245,3 +277,19 @@ const ButtonDiv = styled.div`
   justify-content: center;
   
 `
+
+const Select = styled.select`
+  padding: 12px;
+  border-radius: 4px;
+  border: 1px solid #dee2e6;
+  width: 30%;
+  margin-bottom: 10px;
+  outline: none;
+  font-size: 18px;
+  box-sizing: border-box;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath fill='%23808080' d='M16.267,7.075c-0.409-0.41-1.071-0.41-1.48,0L10,11.145L5.213,7.075c-0.41-0.41-1.071-0.41-1.48,0 c-0.41,0.409-0.41,1.071,0,1.48l5.787,5.787c0.41,0.41,1.071,0.41,1.48,0l5.787-5.787C16.677,8.146,16.677,7.484,16.267,7.075z'/%3E%3C/svg%3E") no-repeat right center / 16px 16px;
+  cursor: pointer;
+`;

@@ -2,10 +2,12 @@ import MytodoHeader from './MyTodoHeader'
 import MytodoLeftLayout from './MyTodoLeftLayout'
 import MytodoRightLayout from './MyTodoRightLayout'
 import styled from 'styled-components';
-
+import {getTodos} from './../../api/todos';
+import { useQuery,useMutation, useQueryClient } from "react-query";
+import { useDispatch, useSelector } from "react-redux";
 
 function MyTodoLayout(){
-  
+
     return(
         <Container>
             <Head>
@@ -15,11 +17,11 @@ function MyTodoLayout(){
             <Body>
               <LeftPane>
                   {/* 왼쪽 영역 */}
-                  <MytodoLeftLayout/>
+                  <MytodoLeftLayout  />
               </LeftPane>            
               <RightPane>
                   {/* 오른쪽 영역 */}
-                  <MytodoRightLayout/>
+                  <MytodoRightLayout  />
               </RightPane>
             </Body>  
         </Container>
