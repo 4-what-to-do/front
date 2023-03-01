@@ -54,9 +54,14 @@ export  const getHeartCount = async (id) => {
 
   //특정 POST 좋아요 클릭 
   export  const heartClick = async (payload) => {
-    await api.post(`/posts/communities/like/${payload.id}`,{
+    try {
+    const response = await api.post(`/posts/communities/like/${payload.id}`,{
       likeCount: payload,
     });
+    return response;
+    } catch (error) {
+      console.log(error);
+    }
   };
 
 export  const removeTodo = async (id) => {

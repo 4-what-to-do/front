@@ -11,6 +11,7 @@ function InputWrapper() {
   // 추가한거
   const loginMutation = useMutation(requestLogin, { 
     onSuccess: (response) => {
+      navigate('/mytodo'); // 로그인 성공 후 메인 페이지로 이동
       console.log(response)
       alert("로그인 성공");
     },
@@ -35,7 +36,6 @@ function InputWrapper() {
     } else {
       try {
         loginMutation.mutate({password, email})
-        navigate('/mytodo'); // 로그인 성공 후 메인 페이지로 이동
       } catch (error) {
         console.log(error);
         alert('로그인 실패');

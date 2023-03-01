@@ -10,7 +10,7 @@ import { useParams } from 'react-router-dom';
 function CategoryTodoList({ match }) {
   // const category = match.params.name;
   const { category } = useParams();
-  const [isHearted, setIsHearted] = useState(false);
+  const [isHearted, setIsHearted] = useState([false]);
   const [likeCount, setLikeCount] = useState(0);
   const queryClient = useQueryClient();
 
@@ -23,7 +23,8 @@ function CategoryTodoList({ match }) {
 
 
   const handleHeartClick = () => {
-    setIsHearted(!isHearted);
+    let copyIsHearted =[...isHearted]
+    setIsHearted(isHearted);
     setLikeCount(isHearted ? likeCount - 1 : likeCount + 1);
     heartClick.mutate(likeCount);
     console.log(data)
@@ -63,7 +64,7 @@ function CategoryTodoList({ match }) {
           {item.toDoResponseDtoList.map((todo) => {
             return (
           <TodoItemStyle>
-            <CheckCircle done={true}>{true && <MdDone />}</CheckCircle>
+            <CheckCircle done={todo.done}>{true && <MdDone />}</CheckCircle>
             <TextWrapper>
               <StyledText option={todo.category}>{todo.category}</StyledText>
               <Text>{todo.content}</Text>
