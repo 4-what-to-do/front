@@ -1,26 +1,71 @@
+
 import api from "./axios";
-import axios from "axios";
 
 // 모든 todos를 가져오는 api
-const getTodos = async () => {
-  const response = await api.get("/todos");
-  return response;
+// const getTodos = async (date) => {
+//   const response = await api.get(`/posts/todo?date="${date}"`);
+//   return response;
+// };
+
+export const getTodos = async (date) => {
+  
+  try {
+    console.log(date);
+    const response = await api.get("/posts/todo", {
+      params: { date: date },
+      
+    });
+    console.log(response.data);
+    return response;
+  } catch (error) {
+    console.log(error);
+  }
+ 
 };
 
+const communitygetTodos = async (category) => {
+  const response = await api.get(`/posts/communities?category="${category}"`);
+  response.data.map((item)=>item.count)
+  return response;
 
-const addTodo = async (newTodo) => {
-    await api.post("/todos", newTodo);
+};
+
+//todo list 작성
+  const addTodo = async (newTodo) => {
+      await api.post("/posts/todo", newTodo);
+    };
+    
+
+  const getHeartCount = async (id) => {
+    await api.get(`/posts/communities/todo/like/${id}`);
   };
 
   const removeTodo = async (id) => {
-    await api.delete(`/todos/${id}`);
+    await api.delete(`/posts/${id}`);
   };
   
-  const switchTodo = async (payload) => {
-    await api.patch(`/todos/${payload.id}`, {
-      isDone: payload.isDone,
+  //payload에는 바뀐 done 값이 들어있음.
+  const checkSwitchTodo = async (payload) => {
+    await api.patch(`/posts/todo/done/{payload.id}`, {
+      done: payload.done,
     });
   };
+
+  //Todo List 수정
+  const switchTodo = async (payload) => {
+    await api.put(`/posts/todo/{payload.id}`, {
+      content: payload.content,
+      category: payload.category,
+    });
+  };
+
+  const publicSwitchTodo = async (payload) => {
+    await api.patch(`/posts/open/{payload.id}`, {
+      open: payload.open,
+    });
+  };
+  
+  //-----------------------------
 
 const postSignup = async (payload) => {
   try {
@@ -37,7 +82,6 @@ const postSignup = async (payload) => {
 };
 
 export const getCheckId = async (payload) => {
-  console.log(payload);
   try {
     const response = await api.get("/users/email-check", {
       params: { email: payload },
@@ -65,7 +109,7 @@ export const requestLogin = async (payload) => {
     // localStorage.setItem("refresh_token", response.data.refresh_token);
 
     //axios 인스턴스의 default header에 access_token 설정
-    axios.defaults.headers.common[
+    api.defaults.headers.common[
       "Authorization"
     ] = `Bearer ${response.data.access_token}`;
 
@@ -96,4 +140,5 @@ export const requestLogout = async () => {
   }
 };
 
-export { getTodos, addTodo, removeTodo, switchTodo, postSignup };
+export { publicSwitchTodo,postSignup, addTodo, removeTodo, checkSwitchTodo,communitygetTodos,getHeartCount, switchTodo};
+

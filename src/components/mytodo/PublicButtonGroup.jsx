@@ -1,134 +1,247 @@
-import styled, { css } from 'styled-components';
-import React, { useEffect, useState } from 'react';
-import { MdAdd } from 'react-icons/md';
-import { useDispatch, useSelector } from "react-redux";
+import React ,{useState} from "react";
+import styled,{ css } from "styled-components";
+import { MdDone, MdDelete,MdOutlineDoneOutline,MdOutlineCancel } from "react-icons/md";
+import { removeTodo, checkSwitchTodo, switchTodo } from "./../../api/todos";
+import { useQuery,useMutation, useQueryClient } from "react-query";
+import {getTodos} from './../../api/todos';
+import { useSelector } from 'react-redux';
 
-function PublicButtonGroup(){
-    const [open, setOpen] = useState(false);
-    const onToggle = () => setOpen(!open);
-    const handleFormSubmit = (e) => {
-        e.preventDefault();
-    }
+function TodoItem({ date }){
+  const todoDate = useSelector((state)=>state.dateSlice);
+  console.log(date);
+    const { isLoading, isError, data } = useQuery("posts", getTodos(date));
     
+    const queryClient = useQueryClient();
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    let [editedTodoTitle, setEditedTodoTitle] = useState('');
+    
+
+    const deleteMutation = useMutation(removeTodo, {
+      onSuccess: () => {
+        queryClient.invalidateQueries("posts");
+      },
+    });
+
+    const switchMutation = useMutation(checkSwitchTodo, {
+      onSuccess: () => {
+        queryClient.invalidateQueries("posts");
+      },
+    });
+
+    const checkSwitchMutation = useMutation(switchTodo, {
+      onSuccess: () => {
+        queryClient.invalidateQueries("posts");
+      },
+    });
+
+    const handleModalInputChange = (e,item) => {
+      editedTodoTitle = item.content;
+      setEditedTodoTitle(e.target.value);
+      const payload = {
+        content: item.content,
+        category: item.category,
+      };
+      checkSwitchMutation.mutate(payload);
+    };
+  
+    const handleModalCompleteButtonClick = () => {
+      const payload = {
+        content : editedTodoTitle
+      };
+      switchMutation.mutate(payload);
+      setIsModalOpen(false);
+    };
+    
+    const handleModalCancelButtonClick = (item) => {
+    setEditedTodoTitle(item.content);
+    setIsModalOpen(false);
+    };
+
+    const checkDonehandler = (e,item) =>{
+      e.stopPropagation();
+      const payload = {
+        id:item.id,
+        done: !item.done,
+      };
+      switchMutation.mutate(payload);
+       
+    }
+
+    const handleDeleteButtonClick = (e,item) => {
+      deleteMutation.mutate(item.id);
+    }
+// date !== ""
+// date && data && data.map
+// 1. network 통신 성공
+// 2. 저 코드를 쓰세요
+// date !== "" && data && data.map
     return(
         <>
-            {open && (
-                <AddFormPosition>
-                    <AddFormStyle onSubmit={handleFormSubmit}>
-                        <InputWrapper>
-                            <Select>
-                                <option>공부</option>
-                                <option>취미</option>
-                                <option>약속</option>
-                                <option>업무</option>
-                                <option>기타</option>
-                            </Select>
-                            <Input />
-                        </InputWrapper>
-                    </AddFormStyle>
-                </AddFormPosition>
-            )}
-            <CircleButton onClick={onToggle} open={open}>
-                <MdAdd />
-            </CircleButton>
+        {date && data 
+          && data.map((item) =>{
+            return(
+              <>
+            <TodoItemStyle key={item.id}>
+                <CheckCircle onClick={(e,item)=>checkDonehandler(e,item)} > {item.done && <MdDone />} </CheckCircle>
+                <TextWrapper>
+                <StyledText option={item.category}>공부</StyledText>
+                <Text>리액트 공부하기</Text>
+                </TextWrapper>
+                <Remove onClick={(e,item) => handleDeleteButtonClick(e,item)}>
+                <MdDelete />
+                </Remove>
+            </TodoItemStyle>
+            <Modal isOpen={isModalOpen}>
+            <ModalInput value={editedTodoTitle} onChange={(e) => handleModalInputChange(e,item)} />
+            <ButtonDiv>
+            <ModalButton onClick={() => handleModalCompleteButtonClick(item)}>
+                <MdOutlineDoneOutline/>
+            </ModalButton>
+            <ModalButton onClick={() => handleModalCancelButtonClick(item)}>
+                <MdOutlineCancel/>
+            </ModalButton>
+            </ButtonDiv>
+            </Modal>
+            </>
+            );
+         })}
+        
         </>
+        
+        
     )
 }
 
-const CircleButton = styled.button`
-  background: #38d9a9;
-  &:hover {
-    background: #63e6be;
-  }
-  &:active {
-    background: #20c997;
-  }
+export default TodoItem;
 
-  z-index: 5;
-  cursor: pointer;
-  width: 80px;
-  height: 80px;
-  display: block;
+const Remove = styled.div`
+  width: 32px;
+  height: 32px;
+  display: none;
   align-items: center;
   justify-content: center;
-  font-size: 60px;
-  position: absolute;
-  left: 50%;
-  bottom: 0px;
-  transform: translate(-50%, 50%);
-  color: white;
-  border-radius: 50%;
-  border: none;
-  outline: none;
+  color: #dee2e6;
+  font-size: 24px;
+  cursor: pointer;
+  &:hover {
+    color: #ff6b6b;
+  }
+`;
+
+const TodoItemStyle = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 12px;
+  padding-bottom: 12px;
+  &:hover {
+    ${Remove} {
+      display: initial;
+    }
+  }
+`;
+
+const CheckCircle = styled.div`
+  width: 32px;
+  height: 32px;
+  border-radius: 16px;
+  border: 1px solid #ced4da;
+  font-size: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
-
-  transition: 0.125s all ease-in;
-  ${props =>
-    props.open &&
+  margin-right: 20px;
+  cursor: pointer;
+  ${(props) =>
+    props.done &&
     css`
-      background: #ff6b6b;
-      &:hover {
-        background: #ff8787;
-      }
-      &:active {
-        background: #fa5252;
-      }
-      transform: translate(-50%, 50%) rotate(45deg);
+      border: 1px solid #38d9a9;
+      color: #38d9a9;
     `}
 `;
-
-const AddFormPosition = styled.div`
-  width: 100%;
-  bottom: 0;
-  left: 0;
-  position: absolute;
-`;
-
-const AddFormStyle = styled.form`
-  background: #f8f9fa;
-  padding-left: 32px;
-  padding-top: 32px;
-  padding-right: 32px;
-  padding-bottom: 72px;
-
-  border-bottom-left-radius: 16px;
-  border-bottom-right-radius: 16px;
-  border-top: 1px solid #e9ecef;
-`;
-
-const InputWrapper = styled.div`
+const TextWrapper = styled.div`
   display: flex;
   align-items: center;
-  width: 100%;
+  flex-direction: row;
+  flex-grow: 1;
 `;
-
-const Input = styled.input`
-  padding: 12px;
-  border-radius: 4px;
-  border: 1px solid #dee2e6;
-  width: 100%;
-  outline: none;
-  font-size: 18px;
-  box-sizing: border-box;
-  margin-left: 10px;
-`;
-
-const Select = styled.select`
-  padding: 12px;
-  border-radius: 4px;
-  border: 1px solid #dee2e6;
-  width: 20%;
-  outline: none;
-  font-size: 18px;
-  box-sizing: border-box;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath fill='%23808080' d='M16.267,7.075c-0.409-0.41-1.071-0.41-1.48,0L10,11.145L5.213,7.075c-0.41-0.41-1.071-0.41-1.48,0 c-0.41,0.409-0.41,1.071,0,1.48l5.787,5.787c0.41,0.41,1.071,0.41,1.48,0l5.787-5.787C16.677,8.146,16.677,7.484,16.267,7.075z'/%3E%3C/svg%3E") no-repeat right center / 16px 16px;
+const StyledText = styled.div`
+  font-size: 21px;
+  color: white;
+  background-color: ${(props) => getColor(props.option)};
+  padding: 5px;
+  margin-right: 5px;
+  border-radius: 5px;
   cursor: pointer;
 `;
 
+function getColor(option) {
+    switch (option) {
+      case "STUDY":
+        return "#87CEEB"; // 하늘색
+      case "EXERCISE":
+        return "#47e4a2"; // 노란색
+      case "MEETING":
+        return "#FF69B4"; // 분홍색
+      case "TASK":
+        return "#8B008B"; // 보라색
+      default:
+        return "#D3D3D3"; // 회색
+    }
+  }
 
-export default PublicButtonGroup;
+const Text = styled.div`
+  flex-grow: 1;
+  flex: 1;
+  font-size: 21px;
+  color: #495057;
+  ${(props) =>
+    props.done &&
+    css`
+      color: #ced4da;
+    `}
+  cursor: pointer;
+`;
+
+const Modal = styled.div`
+  display: ${(props) => (props.isOpen ? "flex" : "none")};
+  flex-direction: column;
+  align-items: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
+`;
+
+const ModalInput = styled.input`
+  margin-bottom: 20px;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ced4da;
+  font-size: 16px;
+`;
+
+const ModalButton = styled.button`
+  padding: 7px 30px;
+  margin-right:20px;
+  border-radius: 5px;
+  font-size: 24px;
+  background-color: #38d9a9;
+  color: white;
+  cursor: pointer;
+  &:hover {
+    background-color: #63e6be;
+  }
+`;
+
+const ButtonDiv = styled.div`
+  margin-left:20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+`

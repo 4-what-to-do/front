@@ -1,22 +1,22 @@
-import React from 'react'
-import styled from 'styled-components';
-import Header from './Header'
-import LoginFormWrapper from '././login/LoginFormWrapper'
+// import React from 'react'
+// import styled from 'styled-components';
+// import Header from './Header'
+// import LoginFormWrapper from '././login/LoginFormWrapper'
 
-function Layout() {
-  return (
-    <StLayout>
-      <Header/>
-      <LoginFormWrapper/>
-    </StLayout>
-  )
-}
+// function Layout() {
+//   return (
+//     <StLayout>
+//       <Header/>
+//       <LoginFormWrapper/>
+//     </StLayout>
+//   )
+// }
 
-export default Layout
+// export default Layout
 
-const StLayout = styled.div`
-display: flex;
-justify-content: center;
-align-items: center;
-height: 100vh;
-`;
+// const StLayout = styled.div`
+// display: flex;
+// justify-content: center;
+// align-items: center;
+// height: 100vh;
+// `;

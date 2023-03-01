@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import { Link, useNavigate } from "react-router-dom";
+import { Link,useNavigate } from "react-router-dom";
 import { HiOutlineLogout } from 'react-icons/hi';
 import { FaUserFriends } from 'react-icons/fa';
 import { requestLogout } from '../../api/todos';
@@ -9,6 +9,7 @@ import { useMutation } from 'react-query';
 
 
 function MyTodoHeader(){
+
   const navigate = useNavigate();
   
   const logoutMutation = useMutation(requestLogout, {
@@ -27,12 +28,10 @@ function MyTodoHeader(){
       console.log(error);
     }
   };
-  
-
     return(
         <>
-        <Community to={'/community'}><FaUserFriends fontSize="24px"/></Community>
-        <Logout onClick={handleLogout}><HiOutlineLogout fontSize="24px"/></Logout>
+          <Community to={'/community'}><FaUserFriends fontSize="24px"/></Community>
+          <Logout onClick={handleLogout}><HiOutlineLogout fontSize="24px"/></Logout>
         </>
     )
 }

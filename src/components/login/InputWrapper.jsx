@@ -49,7 +49,7 @@ const checkLoginInfo = () => {
     },
     onError: (response) => {
       console.log(response);
-      alert("로그인 뭔가 에러?");
+      alert("로그인 뭔가 에러");
     },
   });
 
@@ -58,7 +58,6 @@ const checkLoginInfo = () => {
   };
 
   const handlePasswordChange = (e) => {
-    console.log(password);
     setPassword(e.target.value);
   };
 
@@ -71,7 +70,6 @@ const checkLoginInfo = () => {
         console.log(password)
         loginMutation.mutate({password, email})
         const result = loginMutation.response.data; //추가
-        // const result = await requestLogin(email, password); //원래
         setLoginInfo(result.token); // 로그인 정보 저장
         navigate('/mytodo'); // 로그인 성공 후 메인 페이지로 이동
       } catch (error) {

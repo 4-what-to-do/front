@@ -1,7 +1,6 @@
-import React, { useState,useEffect } from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
-import { useMutation, useQuery } from 'react-query';
-import axios from 'axios';
+import { useMutation } from 'react-query';
 import { postSignup, getCheckId } from '../../api/todos';
 import { useNavigate } from 'react-router-dom';
 
@@ -11,36 +10,27 @@ function MembershipInputWrappert() {
   const [nickname, setNickname] = useState("")
   const [password, setPassword] = useState("")
   const [passwordCheck, setPasswordCheck] = useState("");
-  const [submitDisabled, setSubmitDisabled] = useState(false);
   const [showErrorMessage, setShowErrorMessage] = useState(false);
   const [ischeck, setIscheck] = useState(false);
   const [isemail, setIsemail] = useState(false);
   const navigate = useNavigate();
 
-  const { isLoading, isError, data } = useQuery("checkId", getCheckId);
-
-  // useEffect(() => {
-  //   setSubmitDisabled(password === passwordCheck)
-  // }, [password, passwordCheck])
-
 //회원가입
   const signUpMutation = useMutation(postSignup, {
     onSuccess: (response) => {
       console.log(response)
-      alert("회원가입 성공?");
+      alert("회원가입 성공");
       navigate("/");
     },
     onError: (response) => {
       console.log(response);
-      alert("회원가입 뭔가 에러?");
+      alert("회원가입 뭔가 에러");
     },
   });
 
   //중복확인
   const checkIdMutation = useMutation(getCheckId, {
     onSuccess: (response) => {
-      console.log(1);
-      console.log(response);
       setIsemail(response);
     },
   });
