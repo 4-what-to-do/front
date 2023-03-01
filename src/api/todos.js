@@ -1,12 +1,6 @@
 
 import api from "./axios";
 
-// 모든 todos를 가져오는 api
-// const getTodos = async (date) => {
-//   const response = await api.get(`/posts/todo?date="${date}"`);
-//   return response;
-// };
-
 export const getTodos = async (date) => {
   
   try {
@@ -23,51 +17,78 @@ export const getTodos = async (date) => {
  
 };
 
-const communitygetTodos = async (category) => {
-  const response = await api.get(`/posts/communities?category="${category}"`);
-  response.data.map((item)=>item.count)
-  return response;
+export const communitygetTodos = async (category) => {
+  const response = await api.get("/posts/communities", {
+
+    params: { category: category },
+    
+  });
+
+  const count = response.data.map((item)=>item.count)
+    return [response,count];
 
 };
 
 //todo list 작성
-  const addTodo = async (newTodo) => {
+export  const addTodo = async (newTodo) => {
       await api.post("/posts/todo", newTodo);
     };
     
 
-  const getHeartCount = async (id) => {
-    await api.get(`/posts/communities/todo/like/${id}`);
+export  const getHeartCount = async (id) => {
+    await api.get("/posts/communities/todo/like/",{
+      params: { postid: id },
+    });
   };
 
-  const removeTodo = async (id) => {
-    await api.delete(`/posts/${id}`);
+export  const removeTodo = async (id) => {
+    try{
+      await api.delete(`/posts/${id}`);
+    }
+    catch{
+      return null;
+    }
   };
   
   //payload에는 바뀐 done 값이 들어있음.
-  const checkSwitchTodo = async (payload) => {
-    await api.patch(`/posts/todo/done/{payload.id}`, {
-      done: payload.done,
-    });
+  export  const checkSwitchTodo = async (payload) => {
+    try{
+      await api.put(`/posts/todo/done/${payload.id}`, {
+        done: payload.done,
+      });
+    }
+    catch{
+      return null;
+    }
   };
 
   //Todo List 수정
-  const switchTodo = async (payload) => {
-    await api.put(`/posts/todo/{payload.id}`, {
-      content: payload.content,
-      category: payload.category,
+  export const switchTodo = async (payload) => {
+    try{
+      await api.put(`/posts/todo/${payload.id}`, {
+        content: payload.content,
+        category: payload.category,
     });
+    }
+    catch{
+      return null;
+    }
   };
 
-  const publicSwitchTodo = async (payload) => {
-    await api.patch(`/posts/open/{payload.id}`, {
-      open: payload.open,
-    });
+  export const publicSwitchTodo = async (payload) => {
+    try{
+      await api.put(`/posts/open/${payload.id}`, {
+        open: payload.open,
+      });
+    }
+    catch{
+      return null;
+    }
   };
   
   //-----------------------------
 
-const postSignup = async (payload) => {
+  export const postSignup = async (payload) => {
   try {
     const response = await api.post("/users/signup",   {
       email: payload.email,
@@ -141,6 +162,6 @@ export const requestLogout = async () => {
   }
 };
 
-export { publicSwitchTodo,postSignup, addTodo, removeTodo, checkSwitchTodo,communitygetTodos,getHeartCount, switchTodo};
+
 
 

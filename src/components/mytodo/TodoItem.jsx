@@ -9,7 +9,7 @@ import { useSelector } from 'react-redux';
 function TodoItem({ date }){
   const todoDate = useSelector((state)=>state.dateSlice);
   console.log(date);
-    const { isLoading, isError, data } = useQuery("posts", getTodos(date));
+    const { isLoading, isError, data } = useQuery("posts", () => getTodos(date));
     
     const queryClient = useQueryClient();
     const [isModalOpen, setIsModalOpen] = useState(false);
