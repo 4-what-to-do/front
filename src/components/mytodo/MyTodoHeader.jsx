@@ -11,6 +11,7 @@ import { useMutation } from 'react-query';
 function MyTodoHeader(){
 
   const navigate = useNavigate();
+
   
   const logoutMutation = useMutation(requestLogout, {
     onSuccess: (response) => {
@@ -28,11 +29,8 @@ function MyTodoHeader(){
       console.log(error);
     }
   };
-  
-
     return(
         <>
-        
         <Community to={'/community'}><FaUserFriends fontSize="24px"/></Community>
         <Logout onClick={handleLogout}><HiOutlineLogout fontSize="24px"/></Logout>
         </>

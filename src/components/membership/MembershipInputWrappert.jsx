@@ -1,7 +1,11 @@
 import React, { useState,useEffect } from 'react'
 import styled from 'styled-components'
+<<<<<<< HEAD
 import { useMutation, useQuery } from 'react-query';
 import axios from 'axios';
+=======
+import { useMutation } from 'react-query';
+>>>>>>> b2c0a27adbd8a218dca0e96b9c7bd903d7ddc778
 import { postSignup, getCheckId } from '../../api/todos';
 import { useNavigate } from 'react-router-dom';
 
@@ -11,7 +15,10 @@ function MembershipInputWrappert() {
   const [nickname, setNickname] = useState("")
   const [password, setPassword] = useState("")
   const [passwordCheck, setPasswordCheck] = useState("");
+<<<<<<< HEAD
   const [submitDisabled, setSubmitDisabled] = useState(false);
+=======
+>>>>>>> b2c0a27adbd8a218dca0e96b9c7bd903d7ddc778
   const [showErrorMessage, setShowErrorMessage] = useState(false);
   const [ischeck, setIscheck] = useState(false);
   const [isemail, setIsemail] = useState(false);
@@ -27,20 +34,27 @@ function MembershipInputWrappert() {
   const signUpMutation = useMutation(postSignup, {
     onSuccess: (response) => {
       console.log(response)
-      alert("회원가입 성공?");
+      alert("회원가입 성공");
       navigate("/");
     },
     onError: (response) => {
       console.log(response);
+<<<<<<< HEAD
       alert("회원가입 뭔가 에러?");
+=======
+      alert("회원가입 뭔가 에러");
+>>>>>>> b2c0a27adbd8a218dca0e96b9c7bd903d7ddc778
     },
   });
 
   //중복확인
   const checkIdMutation = useMutation(getCheckId, {
     onSuccess: (response) => {
+<<<<<<< HEAD
       console.log(1);
       console.log(response);
+=======
+>>>>>>> b2c0a27adbd8a218dca0e96b9c7bd903d7ddc778
       setIsemail(response);
     },
   });

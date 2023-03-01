@@ -15,7 +15,11 @@ function CategoryTodoList({match}){
 
   const { isLoading, isError, data } = useQuery("communities", communitygetTodos(category));
   
+
   const { isLoadings, isErrors, count } = useQuery("count", getHeartCount(data.id));
+
+  // const { isLoadings, isErrors, count } = useQuery("count", getHeartCount(data.id));
+
   
   
   const handleHeartClick = () => {
@@ -48,7 +52,11 @@ function CategoryTodoList({match}){
                   <HeartIcon onClick={handleHeartClick}>
                       {isHearted ? <FaHeart /> : <FaRegHeart />}
                     </HeartIcon>
+
                     <span className='count'>{count}</span>
+
+                    {/* <span className='count'>{count}</span> */}
+
                   </HeartWrapper>
                 </UserHeartWrapper>
                 <div className="title-wrapper">

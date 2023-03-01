@@ -1,6 +1,7 @@
 
 import api from "./axios";
 
+
 export const getTodos = async (date) => {
   
   try {
@@ -26,16 +27,22 @@ export const communitygetTodos = async (category) => {
 
   const count = response.data.map((item)=>item.count)
     return [response,count];
+}
 
-};
 
 //todo list 작성
-export  const addTodo = async (newTodo) => {
+
+export const addTodo = async (newTodo) => {
+
+  const addTodo = async (newTodo) => {
+
       await api.post("/posts/todo", newTodo);
     };
     
+  }
 
-export  const getHeartCount = async (id) => {
+export const getHeartCount = async (id) => {
+
     await api.get("/posts/communities/todo/like/",{
       params: { postid: id },
     });
@@ -84,11 +91,17 @@ export  const removeTodo = async (id) => {
     catch{
       return null;
     }
-  };
+  }
+
+
   
   //-----------------------------
 
+
   export const postSignup = async (payload) => {
+
+const postSignup = async (payload) => {
+
   try {
     const response = await api.post("/users/signup",   {
       email: payload.email,
@@ -101,9 +114,12 @@ export  const removeTodo = async (id) => {
     console.log(error);
   }
 };
+  }
 
 export const getCheckId = async (payload) => {
+
   console.log(payload);
+
   try {
     const response = await api.get("/users/email-check", {
       params: { email: payload },
@@ -161,6 +177,10 @@ export const requestLogout = async () => {
     throw new Error('로그아웃 실패');
   }
 };
+
+
+
+
 
 
 

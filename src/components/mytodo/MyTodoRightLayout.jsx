@@ -10,6 +10,7 @@ import {getTodos} from './../../api/todos';
 
 function MyTodoRightLayout() {
 
+
   const todoDate = useSelector((state)=>state.dateSlice);
   const { isLoading, isError, data } = useQuery("posts",()=> getTodos(todoDate.date.date));
   console.log(data)
@@ -17,8 +18,6 @@ function MyTodoRightLayout() {
   const [isOn, setIsOn] = useState(false);
   const queryClient = useQueryClient();
 
-  console.log(todoDate.date)
-  
 
   const publicswitchMutation = useMutation( publicSwitchTodo, {
     onSuccess: () => {

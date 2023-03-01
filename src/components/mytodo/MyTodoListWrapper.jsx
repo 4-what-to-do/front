@@ -60,4 +60,4 @@ const ProgressBar = styled.div`
   border-radius: 20px;
   background-color: #5ee2bb;
   width: ${(props) => props.progress}%;
-`;
+`

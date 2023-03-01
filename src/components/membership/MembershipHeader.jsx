@@ -5,13 +5,18 @@ import styled from 'styled-components';
 
 function Header() {
   return (
-    <StLogo src='/img/logo.jpeg' alt='logo' />
+      <StLogo src='/img/logo.jpeg' alt='logo' />
   );
 }
 
 export default Header;
 
 const StLogo = styled.img`
+
   width: 700px;
   height: 850px;
+
+  max-width: 700px;
+  max-height: 100%;
+
 `;
