@@ -11,6 +11,6 @@ function Header() {
 export default Header;
 
 const StLogo = styled.img`
-  width: 700px;
-  height: 850px;
+max-width: 700px;
+max-height: 100%;
 `;
