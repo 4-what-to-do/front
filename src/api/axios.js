@@ -12,7 +12,9 @@ instance.interceptors.request.use(
     // 요청을 보내기 전 수행
     console.log("인터셉트 요청 성공!");
     const token = localStorage.getItem("access_token");
-    config.headers["Authorization"] = `Bearer ${token}`;
+    if (token) {
+      config.headers["Authorization"] = `Bearer ${token}`;
+    }
     return config;
   },
   function (error) {

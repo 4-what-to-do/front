@@ -1,51 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components'
 import { Link, useNavigate } from 'react-router-dom';
 import { requestLogin } from '../../api/todos';
 import { useMutation } from 'react-query';
 
-
-
-
 function InputWrapper() {
-  // 로그인 정보를 저장하는 함수
-const setLoginInfo = (token) => {
-  localStorage.setItem('token', token);
-};
-
-// 저장된 로그인 정보를 가져오는 함수
-const getLoginInfo = () => {
-  return localStorage.getItem('token');
-};
-
-// 저장된 로그인 정보를 삭제하는 함수
-const removeLoginInfo = () => {
-  localStorage.removeItem('token');
-};
-
-// 로그인 정보를 체크하는 함수
-const checkLoginInfo = () => {
-  const token = getLoginInfo();
-  return token ? true : false;
-};
-
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
-
-  useEffect(() => {
-    // 로그인 정보가 있으면 메인 페이지로 이동
-    if (checkLoginInfo()) {
-      navigate('/mytodo');
-    }
-  }, [navigate]);
-
   // 추가한거
   const loginMutation = useMutation(requestLogin, { 
     onSuccess: (response) => {
       console.log(response)
       alert("로그인 성공");
-      navigate("/mytodo");
     },
     onError: (response) => {
       console.log(response);
@@ -67,10 +34,7 @@ const checkLoginInfo = () => {
       alert("이메일 형식을 입력하세요.");
     } else {
       try {
-        console.log(password)
         loginMutation.mutate({password, email})
-        const result = loginMutation.response.data; //추가
-        setLoginInfo(result.token); // 로그인 정보 저장
         navigate('/mytodo'); // 로그인 성공 후 메인 페이지로 이동
       } catch (error) {
         console.log(error);
@@ -78,11 +42,6 @@ const checkLoginInfo = () => {
       }
     }
   }
-
-  const onLogout = () => {
-    removeLoginInfo(); // 저장된 로그인 정보 삭제
-    navigate('/login'); // 로그아웃 후 로그인 페이지로 이동
-  };
   
   return(
     <>

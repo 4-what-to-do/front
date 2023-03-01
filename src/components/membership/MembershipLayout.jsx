@@ -30,9 +30,9 @@ const StLogoWrapper = styled.div`
   justify-content: center;
   align-items: center;
   width: 100%;
-  max-height: calc(100vh - 330px);
-  margin-top: 30px;
-`;
+  max-height: 200px;
+  margin-top: 20px;
+  `;
 
 const StMembershipFormWrapper = styled.div`
   width: 700px;

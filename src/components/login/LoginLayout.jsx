@@ -23,6 +23,7 @@ const StLayout = styled.div`
   justify-content: center;
   align-items: center;
   flex-direction: column;
+  margin-top: 20px
 `;
 
 const StLoginFormWrapper = styled.div`

@@ -15,7 +15,9 @@ function MyTodoHeader(){
   const logoutMutation = useMutation(requestLogout, {
     onSuccess: (response) => {
       console.log(response);
-      localStorage.removeItem('access_token');
+    },
+    onError: (response) => {
+      console.log(response);
     },
   });
 

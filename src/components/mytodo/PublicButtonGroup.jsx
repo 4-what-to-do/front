@@ -70,46 +70,6 @@ function TodoItem({ date }){
     const handleDeleteButtonClick = (e,item) => {
       deleteMutation.mutate(item.id);
     }
-// date !== ""
-// date && data && data.map
-// 1. network 통신 성공
-// 2. 저 코드를 쓰세요
-// date !== "" && data && data.map
-    return(
-        <>
-        {date && data 
-          && data.map((item) =>{
-            return(
-              <>
-            <TodoItemStyle key={item.id}>
-                <CheckCircle onClick={(e,item)=>checkDonehandler(e,item)} > {item.done && <MdDone />} </CheckCircle>
-                <TextWrapper>
-                <StyledText option={item.category}>공부</StyledText>
-                <Text>리액트 공부하기</Text>
-                </TextWrapper>
-                <Remove onClick={(e,item) => handleDeleteButtonClick(e,item)}>
-                <MdDelete />
-                </Remove>
-            </TodoItemStyle>
-            <Modal isOpen={isModalOpen}>
-            <ModalInput value={editedTodoTitle} onChange={(e) => handleModalInputChange(e,item)} />
-            <ButtonDiv>
-            <ModalButton onClick={() => handleModalCompleteButtonClick(item)}>
-                <MdOutlineDoneOutline/>
-            </ModalButton>
-            <ModalButton onClick={() => handleModalCancelButtonClick(item)}>
-                <MdOutlineCancel/>
-            </ModalButton>
-            </ButtonDiv>
-            </Modal>
-            </>
-            );
-         })}
-        
-        </>
-        
-        
-    )
 }
 
 export default TodoItem;

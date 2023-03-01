@@ -10,11 +10,14 @@ import {getTodos} from './../../api/todos';
 
 function MyTodoRightLayout() {
 
-  const { isLoading, isError, data } = useQuery("posts", getTodos);
+  const todoDate = useSelector((state)=>state.dateSlice);
+  const { isLoading, isError, data } = useQuery("posts",()=> getTodos(todoDate.date.date));
+  console.log(todoDate.date.date);
+  console.log(data)
   const [showCompleted, setShowCompleted] = useState(true);
   const [isOn, setIsOn] = useState(false);
   const queryClient = useQueryClient();
-  const todoDate = useSelector((state)=>state.dateSlice);
+
   console.log(todoDate.date)
   
 

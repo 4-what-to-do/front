@@ -1,12 +1,6 @@
 
 import api from "./axios";
 
-// 모든 todos를 가져오는 api
-// const getTodos = async (date) => {
-//   const response = await api.get(`/posts/todo?date="${date}"`);
-//   return response;
-// };
-
 export const getTodos = async (date) => {
   
   try {
@@ -23,46 +17,91 @@ export const getTodos = async (date) => {
  
 };
 
-const communitygetTodos = async (category) => {
-  const response = await api.get(`/posts/communities?category="${category}"`);
-  response.data.map((item)=>item.count)
-  return response;
+export const communitygetTodos = async () => {
+  try {
+  const response = await api.get("/posts/communities", {
+  });
+  console.log(response)
+  return response.data;
+} catch (error) {
+  console.log(error);
+}
+};
 
+export const communityChoiceTodos = async (category) => {
+  try {
+  const response = await api.get("/posts/communities/category", {
+        params: { category: category },
+  });
+  console.log(response)
+  return response.data;
+} catch (error) {
+  console.log(error);
+}
 };
 
 //todo list 작성
-  const addTodo = async (newTodo) => {
+export  const addTodo = async (newTodo) => {
       await api.post("/posts/todo", newTodo);
     };
     
 
-  const getHeartCount = async (id) => {
-    await api.get(`/posts/communities/todo/like/${id}`);
+export  const getHeartCount = async (id) => {
+    await api.get("/posts/communities/todo/like/",{
+      params: { postid: id },
+    });
   };
 
-  const removeTodo = async (id) => {
-    await api.delete(`/posts/${id}`);
+  //특정 POST 좋아요 클릭 
+  export  const heartClick = async (payload) => {
+    await api.post(`/posts/communities/like/${payload.id}`,{
+      likeCount: payload,
+    });
+  };
+
+export  const removeTodo = async (id) => {
+    try{
+      await api.delete(`/posts/${id}`);
+    }
+    catch{
+      return null;
+    }
   };
   
   //payload에는 바뀐 done 값이 들어있음.
-  const checkSwitchTodo = async (payload) => {
-    await api.patch(`/posts/todo/done/{payload.id}`, {
-      done: payload.done,
-    });
+  export  const checkSwitchTodo = async (payload) => {
+    try{
+      await api.put(`/posts/todo/done/${payload.id}`, {
+        done: payload.done,
+      });
+    }
+    catch{
+      return null;
+    }
   };
 
   //Todo List 수정
-  const switchTodo = async (payload) => {
-    await api.put(`/posts/todo/{payload.id}`, {
-      content: payload.content,
-      category: payload.category,
+  export const switchTodo = async (payload) => {
+    try{
+      await api.put(`/posts/todo/${payload.id}`, {
+        content: payload.content,
+        category: payload.category,
     });
+    }
+    catch{
+      return null;
+    }
   };
 
-  const publicSwitchTodo = async (payload) => {
-    await api.patch(`/posts/open/{payload.id}`, {
-      open: payload.open,
-    });
+  export const publicSwitchTodo = async (payload) => {
+    try{
+      await api.put(`/posts/open/${payload.id}`, {
+        open: payload.open,
+      });
+    }
+    catch{
+      return null;
+    }
   };
   
   //-----------------------------
@@ -122,17 +161,10 @@ export const requestLogin = async (payload) => {
 
 export const requestLogout = async () => {
   try {
-    const access_token = localStorage.getItem('access_token');
+    localStorage.removeItem('access_token');
     const response = await api.get(
       "/users/logout",
-      {},
-      {
-        headers: {
-          Authorization: `Bearer ${access_token}`,
-        },
-      },
     );
-    localStorage.removeItem('access_token');
     return response;
   } catch (error) {
     console.error(error);
@@ -140,5 +172,5 @@ export const requestLogout = async () => {
   }
 };
 
-export { publicSwitchTodo,postSignup, addTodo, removeTodo, checkSwitchTodo,communitygetTodos,getHeartCount, switchTodo};
+export { postSignup };
 
