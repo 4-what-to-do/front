@@ -2,17 +2,20 @@ import MyTodoListWrapper from './MyTodoListWrapper';
 import styled from 'styled-components';
 import { useState, useEffect } from 'react';
 import { BsToggleOff, BsToggleOn } from 'react-icons/bs';
-import { useSelector } from 'react-redux';
+import { useSelector,useDispatch } from 'react-redux';
 import { publicSwitchTodo } from "./../../api/todos";
 import { useQuery,useMutation, useQueryClient } from "react-query";
 import {getTodos} from './../../api/todos';
-
+import {switchIsOn} from './../../redux/modules/dateSlice'
 
 function MyTodoRightLayout() {
   const todoDate = useSelector((state)=>state.dateSlice);
-  const date = todoDate.date.date
+  const date = todoDate.date.date;  // 2023년2월18일
+  const isOnSlice = useSelector((state)=>state.dateSlice); //[]
+  const findisOn = isOnSlice.filter((item)=>item.date == date)
   const queryKey = "posts_" + date;
-
+  
+  const dispatch = useDispatch();
   const { data, error, isLoading } = useQuery(queryKey,()=> getTodos(date), {
     onSuccess: () => {
           
@@ -21,13 +24,10 @@ function MyTodoRightLayout() {
           console.log('error')
         }
   });
-  
-
-  
-  
+    
 
   const [showCompleted, setShowCompleted] = useState(true);
-  const [isOn, setIsOn] = useState(false);
+  const [stateisOn, statesetIsOn] = useState(false);
   const queryClient = useQueryClient();
 
   
@@ -41,11 +41,13 @@ function MyTodoRightLayout() {
 
   const handleToggle = () => {
     
-    setIsOn(!isOn);
-   
+    dispatch(switchIsOn(!stateisOn));
+    statesetIsOn(!stateisOn);
+
     const payload = {
+
       date:date,
-      open:!isOn,
+      open:stateisOn,
 
     }
     publicswitchMutation.mutate(payload);
@@ -58,21 +60,16 @@ function MyTodoRightLayout() {
   return (
     <TodoLayoutStyle>
       <TodoHeadStyle>
-        
-        <div className="title-wrapper">
+          <div className="title-wrapper">
           <h1>{todoDate.date.date}</h1>
           <div className="toggle-wrapper" onClick={handleToggle}>
-          
-            {isOn ? <BsToggleOn size={50} style={{ color: '#5ee2bb' }} /> : <BsToggleOff size={50} style={{ color: '#616060' }} />}
-          
-        </div>
-          
-        </div>
-        
-        <span className="day">{todoDate.date.weekDay}요일</span>
-      </TodoHeadStyle>
-      <MyTodoListWrapper data = {data} showCompleted={showCompleted} />
-    </TodoLayoutStyle>
+            {findisOn.isOn.isOn ? <BsToggleOn size={50} style={{ color: '#5ee2bb' }} /> : <BsToggleOff size={50} style={{ color: '#616060' }} />}
+          </div>
+          </div>
+          <span className="day">{todoDate.date.weekDay}요일</span>
+        </TodoHeadStyle>
+        <MyTodoListWrapper data = {data} showCompleted={showCompleted} />
+      </TodoLayoutStyle>
   );
 }
 

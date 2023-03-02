@@ -49,7 +49,7 @@ function MyTodoListWrapper(){
       }
     
       <ProgressBarWrapper>
-        <ProgressBar progress={progress}/>
+        <ProgressBar undoneTasksCount={undoneTasksCount} progress={progress}/>
       </ProgressBarWrapper>
       <TodoItem/>
       <PublicButtonGroup/>
@@ -83,7 +83,7 @@ const ProgressBarWrapper = styled.div`
 const ProgressBar = styled.div`
   height: 100%;
   border-radius: 20px;
-  background-color: #5ee2bb;
+  background-color:${(props) => props.undoneTasksCount == 0 ? '#5ee2bb' : '#74ef5ba8'};
   width: ${(props) => props.progress}%;
   transition: width 0.5s ease-in-out;
 `;

@@ -212,11 +212,11 @@ function getColor(option) {
       case "STUDY":
         return "#87CEEB"; // 하늘색
       case "EXERCISE":
-        return "#47e4a2"; // 노란색
+        return "#e0e413"; // 노란색
       case "MEETING":
-        return "#FF69B4"; // 분홍색
+        return "#ff1c1c"; // 분홍색
       case "TASK":
-        return "#8B008B"; // 보라색
+        return "#e73be7"; // 보라색
       default:
         return "#D3D3D3"; // 회색
     }

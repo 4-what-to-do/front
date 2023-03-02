@@ -49,11 +49,11 @@ export  const addTodo = async (newTodo) => {
     };
     
 
-export  const getHeartCount = async (count) => {
-    await api.get("/posts/communities/todo/like/",{
-      params: { count: count },
-    });
-  };
+// export  const getHeartCount = async (count) => {
+//     await api.get("/posts/communities/todo/like/",{
+//       params: { count: count },
+//     });
+//   };
 
 export  const removeTodo = async (id) => {
     try{
@@ -88,7 +88,23 @@ export  const removeTodo = async (id) => {
       return null;
     }
   };
+  
 
+  export const Likeswitch = async (payload) => {
+    try{
+      await api.put(`/posts/communities/like/${payload.id}`, {
+
+        likeStatus:payload.likeStatus,
+        
+        
+      });
+      
+    }
+    catch{
+      console.log(payload);
+      return null;
+    }
+  };
   export const publicSwitchTodo = async (payload) => {
     try{
       await api.put(`/posts/open/`, {
@@ -96,7 +112,7 @@ export  const removeTodo = async (id) => {
         open: payload.open,
         
       });
-      
+      console.log(payload.open);
     }
     catch{
       console.log(payload);

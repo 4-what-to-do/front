@@ -3,7 +3,7 @@ import styled, { css } from "styled-components";
 import { MdDone } from "react-icons/md";
 import { FaRegUserCircle, FaHeart, FaRegHeart } from "react-icons/fa";
 import { useQuery, useMutation, useQueryClient } from "react-query";
-import { communitygetTodos, communityChoiceTodos } from './../../api/todos';
+import { communitygetTodos, Likeswitch } from './../../api/todos';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 
@@ -11,7 +11,7 @@ function CategoryTodoList() {
   // const category = match.params.name;
   const { category } = useParams();
   const [isHearted, setIsHearted] = useState(false);
-  const [likeCount, setLikeCount] = useState(0);
+  const [likeCount, setLikeCount] = useState();
   const queryClient = useQueryClient();
   const { id } = useParams();
   const queryKey = "community" + id;
@@ -23,14 +23,23 @@ function CategoryTodoList() {
           console.log('error')
         }
   });
-  
 
+  const LikeswitchMutation = useMutation( Likeswitch, {
+    onSuccess: () => {
+      queryClient.invalidateQueries(queryKey);
+    },
+  });
 
-  const handleHeartClick = () => {
-    setIsHearted(!isHearted);
-    setLikeCount(isHearted ? likeCount - 1 : likeCount + 1);
+ 
+  const handleHeartClick = (item) => {
     
-    console.log(data)
+    const payload = {
+      id:item.id,
+      likeStatus:item.likeStatus,
+    }
+    
+    LikeswitchMutation.mutate(payload);
+    
   };
 
   if (isLoading) {
@@ -51,13 +60,13 @@ function CategoryTodoList() {
           <TodoHeadStyle>
             <UserHeartWrapper>
               <UserWrapper className='user'>
-                <FaRegUserCircle /> &nbsp; { item.nickname}
+                <FaRegUserCircle /> &nbsp; {item.nickname}
               </UserWrapper>
               <HeartWrapper>
-                <HeartIcon onClick={handleHeartClick}>
-                  {isHearted ? <FaHeart /> : <FaRegHeart />}
+                <HeartIcon onClick={()=>handleHeartClick(item)}>
+                  {item.likeStatus ? <FaHeart /> : <FaRegHeart />}
                 </HeartIcon>
-                <span className='count'>{item.Count}</span>
+                <span className='count'>{item.likeCount}</span>
               </HeartWrapper>
             </UserHeartWrapper>
             <div className="title-wrapper">
@@ -232,7 +241,7 @@ function getColor(option) {
     case "STUDY":
       return "#87CEEB"; // 하늘색
     case "EXERCISE":
-      return "#47e4a2"; // 노란색
+      return "#efbc30"; // 노란색
     case "MEETING":
       return "#FF69B4"; // 분홍색
     case "TASK":
