@@ -11,31 +11,30 @@ function CategoryTodoList() {
   // const category = match.params.name;
   const { category } = useParams();
   const [isHearted, setIsHearted] = useState(false);
-  const [likeCount, setLikeCount] = useState();
+  const [likeCount, setLikeCount] = useState(0);
   const queryClient = useQueryClient();
   const { id } = useParams();
   const queryKey = "community" + id;
   const { isLoading, isError, data } = useQuery(queryKey, () => communitygetTodos(id),{
-    onSuccess: () => {
-          
+    onSuccess: (data) => {
+          console.log(data)
         },
         onError: () => {
           console.log('error')
         }
   });
-
+  
   const LikeswitchMutation = useMutation( Likeswitch, {
     onSuccess: () => {
       queryClient.invalidateQueries(queryKey);
     },
   });
 
- 
   const handleHeartClick = (item) => {
     
     const payload = {
-      id:item.id,
-      likeStatus:item.likeStatus,
+      postId:item.postId,
+      likeStatus:!item.likeStatus,
     }
     
     LikeswitchMutation.mutate(payload);
@@ -60,12 +59,12 @@ function CategoryTodoList() {
           <TodoHeadStyle>
             <UserHeartWrapper>
               <UserWrapper className='user'>
-                <FaRegUserCircle /> &nbsp; {item.nickname}
+                <FaRegUserCircle /> &nbsp; { item.nickname}
               </UserWrapper>
               <HeartWrapper>
-                <HeartIcon onClick={()=>handleHeartClick(item)}>
+              <HeartIcon onClick={()=>handleHeartClick(item)}>
                   {item.likeStatus ? <FaHeart /> : <FaRegHeart />}
-                </HeartIcon>
+                </HeartIcon>&nbsp;
                 <span className='count'>{item.likeCount}</span>
               </HeartWrapper>
             </UserHeartWrapper>
@@ -76,7 +75,7 @@ function CategoryTodoList() {
           {item.toDoResponseDtoList.map((todo) => {
             return (
           <TodoItemStyle>
-            <CheckCircle done={true}>{true && <MdDone />}</CheckCircle>
+            <CheckCircle done={todo.true}>{true && <MdDone />}</CheckCircle>
             <TextWrapper>
               <StyledText option={todo.category}>{todo.category}</StyledText>
               <Text>{todo.content}</Text>
@@ -241,7 +240,7 @@ function getColor(option) {
     case "STUDY":
       return "#87CEEB"; // 하늘색
     case "EXERCISE":
-      return "#efbc30"; // 노란색
+      return "#47e4a2"; // 노란색
     case "MEETING":
       return "#FF69B4"; // 분홍색
     case "TASK":

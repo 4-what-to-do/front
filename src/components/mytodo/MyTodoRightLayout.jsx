@@ -6,13 +6,15 @@ import { useSelector,useDispatch } from 'react-redux';
 import { publicSwitchTodo } from "./../../api/todos";
 import { useQuery,useMutation, useQueryClient } from "react-query";
 import {getTodos} from './../../api/todos';
-import {switchIsOn} from './../../redux/modules/dateSlice'
+
 
 function MyTodoRightLayout() {
-  const todoDate = useSelector((state)=>state.dateSlice);
-  const date = todoDate.date.date;  // 2023년2월18일
-  const isOnSlice = useSelector((state)=>state.dateSlice); //[]
-  const findisOn = isOnSlice.filter((item)=>item.date == date)
+
+  const todoDate = useSelector((state) => state.dateSlice);
+  
+  const date = todoDate.date.date;
+  
+
   const queryKey = "posts_" + date;
   
   const dispatch = useDispatch();
@@ -35,19 +37,19 @@ function MyTodoRightLayout() {
 
   const publicswitchMutation = useMutation( publicSwitchTodo, {
     onSuccess: () => {
-      queryClient.invalidateQueries("posts");
+      queryClient.invalidateQueries(queryKey);
     },
   });
 
   const handleToggle = () => {
     
-    dispatch(switchIsOn(!stateisOn));
+    
     statesetIsOn(!stateisOn);
 
     const payload = {
 
       date:date,
-      open:stateisOn,
+      open:!stateisOn,
 
     }
     publicswitchMutation.mutate(payload);
@@ -63,10 +65,10 @@ function MyTodoRightLayout() {
           <div className="title-wrapper">
           <h1>{todoDate.date.date}</h1>
           <div className="toggle-wrapper" onClick={handleToggle}>
-            {findisOn.isOn.isOn ? <BsToggleOn size={50} style={{ color: '#5ee2bb' }} /> : <BsToggleOff size={50} style={{ color: '#616060' }} />}
+            {stateisOn? <BsToggleOn size={50} style={{ color: '#5ee2bb' }} /> : <BsToggleOff size={50} style={{ color: '#616060' }} />}
           </div>
           </div>
-          <span className="day">{todoDate.date.weekDay}요일</span>
+          <span className="day">{todoDate.date.weekday}요일</span>
         </TodoHeadStyle>
         <MyTodoListWrapper data = {data} showCompleted={showCompleted} />
       </TodoLayoutStyle>

@@ -31,7 +31,7 @@ function MyTodoCalendar() {
 
   useEffect(()=>{
     if(formattedDate !== ''){
-      dispatch(addDate({ date: formattedDate, weekDay: weekDay }));
+      dispatch(addDate({ date: formattedDate, weekday: weekDay }));
       
     }
   },[formattedDate,weekDay, dispatch])

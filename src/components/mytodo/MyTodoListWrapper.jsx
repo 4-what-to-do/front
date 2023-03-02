@@ -49,7 +49,7 @@ function MyTodoListWrapper(){
       }
     
       <ProgressBarWrapper>
-        <ProgressBar undoneTasksCount={undoneTasksCount} progress={progress}/>
+      <ProgressBar undoneTasksCount={undoneTasksCount} progress={progress}/>
       </ProgressBarWrapper>
       <TodoItem/>
       <PublicButtonGroup/>

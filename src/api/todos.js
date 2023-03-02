@@ -92,11 +92,8 @@ export  const removeTodo = async (id) => {
 
   export const Likeswitch = async (payload) => {
     try{
-      await api.put(`/posts/communities/like/${payload.id}`, {
-
-        likeStatus:payload.likeStatus,
-        
-        
+      await api.put(`/posts/communities/like/${payload.postId}`, {
+        likeStatus:payload.likeStatus,        
       });
       
     }
@@ -105,9 +102,11 @@ export  const removeTodo = async (id) => {
       return null;
     }
   };
+
+  
   export const publicSwitchTodo = async (payload) => {
     try{
-      await api.put(`/posts/open/`, {
+      await api.put(`/posts/open`, {
         date:payload.date,
         open: payload.open,
         
